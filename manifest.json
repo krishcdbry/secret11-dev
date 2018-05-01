@@ -1,0 +1,31 @@
+{
+    "name" : "Secret11 PWA",
+    "short_name" : "Secret11",
+    "start_url" : ".",
+    "display" : "standalone",
+    "orientation": "portrait",
+    "background_color": "#22a0ce",
+    "theme_color" : "#5FAAE5",
+    "icons" : [
+        {
+            "src" : "/assets/images/pwa_icon_h.png",
+            "sizes" : "48X48",
+            "type" : "image/png"
+        },
+        {
+            "src" : "/assets/images/pwa_icon_m.png",
+            "sizes" : "64X64",
+            "type" : "image/png"
+        },
+        {
+            "src" : "/assets/images/pwa_icon_x.png",
+            "sizes" : "96X96",
+            "type" : "image/png"
+        },
+        {
+            "src" : "/assets/images/pwa_icon_xx.png",
+            "sizes" : "144X144",
+            "type" : "image/png"
+        }
+    ]
+}

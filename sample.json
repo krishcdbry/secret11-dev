@@ -1,3 +1,84 @@
 {
-    
+    "_embedded" : [
+        {
+            "id" : 1,
+            "content" : "He went over to the desk and began to scribble a name on the pad of paper. Fouts, with a slip of paper in his hand, beckoned him from the door of his private office",
+            "type" : "S",
+            "author" : {
+                "username" : "krishcdbry",
+                "image" : "/bucket/profile/user-48.png"
+            },
+            "reply" : {
+                "count" : 5,
+                "data" : []
+            },
+            "answer" : {
+                "count" : 5,
+                "data" : []
+            },
+            "upvote" : {
+                "count" : 45,
+                "voted" : true
+            },
+            "tags" : [
+                "fun",
+                "office",
+                "technology"
+            ]
+        },
+        {
+            "id" : 2,
+            "content" : "Is there any place in India where I can wear bikini and have sex in public ? ",
+            "type" : "Q",
+            "author" : {
+                "username" : "krishcdbry",
+                "image" :  "/bucket/profile/user-17.png"
+            },
+            "reply" : {
+                "count" : 0,
+                "data" : []
+            },
+            "answer" : {
+                "count" : 15,
+                "data" : []
+            },
+            "upvote" : {
+                "count" : 15,
+                "voted" : false
+            },
+            "tags" : [
+                "love",
+                "fantacy",
+                "sex"
+            ]
+        },
+        {
+            "id" : 5,
+            "content" : "I was 19 then, and doing my Engineering in a reputed college in Tamilnadu. I didn’t prefer hostel and so as did few of my friends. So we chose a rented house nearby, in 2009. This girl (X) was also my room mate and we used to be good friends, even though I didn’t share much with her. Days passed by, and we both became good friends. We were 6 ppl in the house and X and I stayed in a room, out of 3 rooms. I noticed X texting with a guy whom I had never met or known, neither was I interested about.",
+            "type" : "S",
+            "author" : {
+                "username" : "rinacdbry",
+                "image" : "/bucket/profile/user-5.png"
+            },
+            "reply" : {
+                "count" : 15,
+                "data" : []
+            },
+            "answer" : {
+                "count" : 25,
+                "data" : []
+            },
+            "upvote" : {
+                "count" : 145,
+                "voted" : true
+            },
+            "tags" : [
+                "nide",
+                "photogrpahy",
+                "fun",
+                "incident",
+                "shocking"
+            ]
+        }
+    ]
 }

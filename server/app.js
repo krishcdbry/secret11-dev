@@ -11,53 +11,82 @@ let connectMultipart = require('connect-multiparty');
 let multipartMiddleware = connectMultipart();
 
 // Controllers
-var authController = require('./server/controllers/auth-controller');
-var profileController = require('./server/controllers/profile-controller');
-var storyController = require('./server/controller/story-controller');
+let authController = require('./controllers/auth-controller');
+let profileController = require('./controllers/profile-controller');
+let storyController = require('./controllers/story-controller');
+let tagController = require('./controllers/tag-controller');
 
 // Datasets
-var story = require('./server/datasets/story.js');
-var user = require('./server/datasets/users.js');
+let story = require('./models/story.js');
+let user = require('./models/users.js');
+
+// Firewall for router
+let firewall = require('./helpers/firewall');
 
 // DB connection
-mongoose.connect('mongodb://localhost:27017/node-krish');
+mongoose.connect('mongodb://localhost:27017/secret11-dbs');
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
-app.use('/assets', express.static(__dirname+ "/assets"));
-app.use('/node_modules', express.static(__dirname+ "/node_modules"));
-app.use('/views', express.static(__dirname+ "/views"));
+
+// Add headers
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-access-token');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 
 app.get('/', function (req, res) {
-	res.sendFile(path.join(__dirname, '', 'index.html'));
+	res.json({"message" : "Welcome to Secret11 API"});
 });
 
 // Authentication service
-app.post('/api/user/signup', authController.signup);
-
-app.post('/api/user/login', authController.login);
-
-app.post('/api/user/profile-photo', multipartMiddleware, profileController.uploadPhoto);
-
-app.post('/api/user/profile-video', multipartMiddleware, profileController.uploadVideo);
+app.post('/auth/signup', authController.signup);
+app.post('/auth/login', authController.login);
+app.post('/auth/logout', authController.logout);
 
 
-// Chat service
-app.get('/api/chat/get-chat', chatController.getChat);
+// User 
+app.get('/user', firewall, profileController.me);
+app.get('/user/:user', firewall, profileController.getUserProfile);
+app.put('/user', firewall, profileController.updateUser);
 
-app.post('/api/chat/get-chat', chatController.getChat);
+// Story
+app.get('/story/feed', firewall, storyController.feed);
+app.post('/story/publish', firewall, storyController.publish);
+app.get('/story/reply/:story', firewall, storyController.replyFeed);
+app.post('/story/reply', firewall, storyController.addReply);
 
-app.post('/api/chat/post-chat-pic', multipartMiddleware, chatController.picChat);
+app.get('/story/userfeed', firewall, storyController.feedByUser);
+app.get('/story/userfeed/:user', firewall, storyController.feedByUser);
 
-app.post('/api/chat/post-chat-video', multipartMiddleware, chatController.videoChat);
+app.post('/story/vote', firewall, storyController.upVote);
+app.delete('/story/vote/:story', firewall, storyController.downVote);
 
+// Tag
+app.get('/tag/:name', firewall, tagController.tagData);
+app.get('/tag/feed/:tag', firewall, tagController.tagFeed)
 
-// User service
-app.get('/api/user/get-users', profileController.getUsers);
+// app.post('/api/user/profile-photo', multipartMiddleware, profileController.uploadPhoto);
+
+// app.post('/api/user/profile-video', multipartMiddleware, profileController.uploadVideo);
 
 
 // Scrap website
-app.post('/api/scrap', scrapController.scrap);
+//app.post('/api/scrap', scrapController.scrap);
 
 http.listen('9000', function () {
 	console.log("Working dude !!");

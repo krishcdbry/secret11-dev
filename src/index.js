@@ -1,8 +1,39 @@
 import React from 'react';
 import App from './app/app';
+import store from './app/store';
+import { Provider } from 'react-redux';
+import { Switch, BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import { render } from 'react-dom';
+import TagPage from './app/components/TagPage';
+import {fillProgress} from './app/helpers/utils';
+
+require('./app/app.scss');
 
 render(
-    <App/>,
+    <Provider store={store}>
+        <Router>
+                <div>
+                    <Route exact={true} path="/" component={App}/>
+
+                    <Switch>
+
+                        <Route path="/profile/:id" render={(props) => { 
+                            return <App route="profile" {...props} /> 
+                        }}/> 
+
+                        <Route path="/tag/:id" render={(props) => { 
+                            return <App route="tag" {...props} /> 
+                        }}/> 
+                    
+                        <Route path="/:id" render={(props) => { 
+                            return <App route="user" {...props} /> 
+                        }}/> 
+
+                    </Switch>
+                    
+                </div>
+            </Router>
+    </Provider>,
     document.getElementById('root')
 )
+
