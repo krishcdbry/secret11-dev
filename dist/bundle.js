@@ -462,7 +462,7 @@ var LOCAL_SERVER = "http://api.secret11:9000";
 var DEV_SERVER = "http://api-dev.secret11.com:9000";
 var LIVE_SERVER = "http://api.secret11.com:9000";
 
-var SERVER = LIVE_SERVER;
+var SERVER = LOCAL_SERVER;
 
 var USER_DATA_API = "/user";
 var USER_PROFILE_API = "/user/";
@@ -3946,10 +3946,10 @@ var Storyitem = function (_React$Component) {
                     var link = "/tag/" + item.name;
                     storyTagsContent.push(_react2.default.createElement(
                         _reactRouterDom.Link,
-                        { to: link, key: key },
+                        { to: link, key: key, className: 'tag' },
                         _react2.default.createElement(
                             'span',
-                            { className: 'tag' },
+                            null,
                             item.name
                         )
                     ));
@@ -4889,12 +4889,15 @@ __webpack_require__(119);
                 _reactRouterDom.Switch,
                 null,
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/profile/:id', render: function render(props) {
+                        (0, _utils.fillProgress)();
                         return _react2.default.createElement(_app2.default, _extends({ route: 'profile' }, props));
                     } }),
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/tag/:id', render: function render(props) {
+                        (0, _utils.fillProgress)();
                         return _react2.default.createElement(_app2.default, _extends({ route: 'tag' }, props));
                     } }),
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/:id', render: function render(props) {
+                        (0, _utils.fillProgress)();
                         return _react2.default.createElement(_app2.default, _extends({ route: 'user' }, props));
                     } })
             )
