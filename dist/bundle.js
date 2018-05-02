@@ -462,7 +462,7 @@ var LOCAL_SERVER = "http://api.secret11:9000";
 var DEV_SERVER = "http://api-dev.secret11.com:9000";
 var LIVE_SERVER = "http://api.secret11.com:9000";
 
-var SERVER = LOCAL_SERVER;
+var SERVER = LIVE_SERVER;
 
 var USER_DATA_API = "/user";
 var USER_PROFILE_API = "/user/";
