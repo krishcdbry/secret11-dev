@@ -4018,12 +4018,14 @@ var Storyitem = function (_React$Component) {
                 ));
             });
 
-            if (story.title.length > 0) {
-                storyTitleContent = _react2.default.createElement(
-                    'div',
-                    { className: 'story-title' },
-                    story.title.trim()
-                );
+            if (story.title) {
+                if (story.title.length > 0) {
+                    storyTitleContent = _react2.default.createElement(
+                        'div',
+                        { className: 'story-title' },
+                        story.title.trim()
+                    );
+                }
             }
 
             if (story.upvote.count > 0) {
