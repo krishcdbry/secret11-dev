@@ -16,70 +16,92 @@ let encryptPassword = (password, salt) => {
 let User = require('../models/users');
 
 module.exports.signup = (req, res) => {
-	let {username, password, gender} = req.body;
-	let hashedPassword = bcrypt.hashSync(password, 8);
-	let user = new User({
-		username,
-		password : hashedPassword,
-		image : 'user-'+Math.floor(Math.random()*49)+1,
-		description: "",
-		gender: gender,
-		_enabled : true,
-	});
-	User.find({"username" : username}, (err, results) => {
-		if (results && results.length == 0) {
-			user.save((err, userInserted) => {
+	try {
+		let {username, password, gender} = req.body;
+		let hashedPassword = bcrypt.hashSync(password, 8);
 
-				let userObject = smart.prepareUser(userInserted)
-
-				let token = jwt.sign({ id: userInserted._id }, config.secret, {
-					expiresIn: 86400 // expires in 24 hours
-				});
-
-				res.status(200).json({ 
-					auth: true, 
-					token: security.encryptToken(token), 
-					userData: userObject 
-				});
+		if (!smart.validUser(username)) {
+			return res.status(403).json({
+				success:false, 
+				message: "username is not valid, Valid characters a-z, A-Z, 0-9, _"
 			});
-		} else {
-			res.json({auth:false, message: "username is not available"});
 		}
-	})
+
+		let user = new User({
+			username,
+			password : hashedPassword,
+			image : 'user-profile-'+Math.floor(Math.random()*209)+1,
+			description: "",
+			gender: gender,
+			_enabled : true,
+		});
+
+		User.find({"username" : username}, (err, results) => {
+			if (results && results.length == 0) {
+				user.save((err, userInserted) => {
+
+					let userObject = smart.prepareUser(userInserted)
+
+					let token = jwt.sign({ id: userInserted._id }, config.secret, {
+						expiresIn: 86400 // expires in 24 hours
+					});
+
+					return res.status(200).json({ 
+						success: true, 
+						token: security.encryptToken(token), 
+						userData: userObject 
+					});
+				});
+			} else {
+				return res.status(200).json({
+					success:false, 
+					message: "username is not available"
+				});
+			}
+		})
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({success:false, message: "Something gone wrong"});
+	}
 };
 
 module.exports.login = (req, res) => {
-	let {username, password} = req.body;
-	User.find({
-		"username" : username
-	}, (err, results) => {
-		if (results && results.length > 0) {
-				let userData = results[0]
+	try {
+		let {username, password} = req.body;
+		User.find({
+			"username" : username
+		}, (err, results) => {
+			if (results && results.length > 0) {
+					let userData = results[0]
 
-				let passwordIsValid = bcrypt.compareSync(password, userData.password);
+					let passwordIsValid = bcrypt.compareSync(password, userData.password);
 
-				if (!passwordIsValid) {
-					res.status(403).json({auth:false, message: "Invalid login attempt"});
-				}
-			
-				let token = jwt.sign({ id: userData._id }, config.secret, {
-					expiresIn: 86400 // expires in 24 hours
-				});
+					if (!passwordIsValid) {
+						return res.status(403).json({success:false, message: "Invalid login attempt"});
+					}
+				
+					let token = jwt.sign({ id: userData._id }, config.secret, {
+						expiresIn: 86400 // expires in 24 hours
+					});
 
-				let userObject = smart.prepareUser(userData)
+					let userObject = smart.prepareUser(userData)
 
-				res.status(200).json({ 
-					auth: true, 
-					token: security.encryptToken(token), 
-					userData: userObject 
-				});
-			
-		} else {
-			res.status(403).json({auth:false, message: "Not a valid account"});
-		}
-	})
+					return res.status(200).json({ 
+						success: true, 
+						token: security.encryptToken(token), 
+						userData: userObject 
+					});
+				
+			} else {
+				return res.status(403).json({success:false, message: "Not a valid account"});
+			}
+		})
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({success:false, message: "Something gone wrong"});
+	}	
 };
 
 module.exports.logout = (req, res) => {
-	return res.status(200).send({ auth: true, message: "successfully loggedout", token: null });
+	return res.status(200).send({ success: true, message: "successfully loggedout", token: null });
 }

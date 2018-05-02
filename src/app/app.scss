@@ -29,7 +29,7 @@ body {
     background-attachment: fixed;
     font-family: "Trebuchet MS",Arial,Verdana,Sans-serif;
     color: #fff;
-    text-shadow: 0px 2px 2px #000;
+   // text-shadow: 0px 2px 2px #000;
     text-align: center;
     height: 100%;
     width: 100%;
@@ -79,11 +79,12 @@ a {
 .signup-item {
   font-size: 17px;
   margin: 20px 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   &.input {
     border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 
@@ -970,6 +971,37 @@ header {
         font-size: 28px;
         color: #7ac142;
       }
+  }
+
+  .global-error {
+    position: fixed;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    z-index: 999999;
+    background: indianred;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: #fff;
+    height: auto;
+    display: none;
+    padding: 10px 8px;
+    border-radius: 0px 0px 3px 3px;
+    box-shadow: 0px 0px 11px #333;  
+    transition: display 1s;
+    -webkit-animation: transform 1s 1!important;
+	-moz-animation: transform 1s 1!important;
+	-o-animation: transform 1s 1!important;
+    animation: transform 1s 1!important;
+
+    .error-message {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 17px;
+    }
   }
   
   .checkmark__circle {

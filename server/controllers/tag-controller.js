@@ -62,64 +62,76 @@ module.exports.getStoriesByTag = (id) => {
 }
 
 module.exports.tagData = (req, res) => {
-    response = res;
-    let {name} = req.params;
-    
-    if (!name) {
-        return returnErrorResonse("Bad Request", 400);
-    }
-
-    Tag.findOne({"name" : name}, (err, results) => {
-        if (!err && results) {
-            let {name, _id} = results;
-           
-            this.getStoriesByTag(_id).then(storyCount => {
-               
-                let tagData = {
-                    name : name,
-                    id : _id,
-                    stories: storyCount
-                }
-               
-                return res.status(200).send({
-                    success: true,
-                    tag : tagData
-                })
-
-            }, err => {
-                return returnErrorResonse("Bad Request", 400);
-            })
-
-            
-        }   
-        else {
+    try {
+        response = res;
+        let {name} = req.params;
+        
+        if (!name) {
             return returnErrorResonse("Bad Request", 400);
-        }     
-    })
+        }
+
+        Tag.findOne({"name" : name}, (err, results) => {
+            if (err) {
+                throw(err);
+            }
+            if (!err && results) {
+                let {name, _id} = results;
+            
+                this.getStoriesByTag(_id).then(storyCount => {
+                
+                    let tagData = {
+                        name : name,
+                        id : _id,
+                        stories: storyCount
+                    }
+                
+                    return res.status(200).send({
+                        success: true,
+                        tag : tagData
+                    })
+
+                }, err => {
+                    throw(err);
+                })
+            }   
+            else {
+                throw("bad request - 73 Line");
+            }     
+        })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }    
 }
 
 module.exports.tagFeed = (req, res) => {
-   let {tag} = req.params;
-   if (tag) {
-       Storytag.find({"tag":tag}, (err, results) => {
-            if (!err && results) {
-             
-                let storyPromises = results.map(item => {
-                    return Story.getStoryById(item.story);      
-                });
+  try {  
+        let {tag} = req.params;
+        if (tag) {
+            Storytag.find({"tag":tag}, (err, results) => {
+                if (err) {
+                    throw(err);
+                }
+                if (!err && results) {
                 
-                Promise.all(storyPromises).then(values => {
-                    return res.status(200).send({ 
-                        _embedded: values 
+                    let storyPromises = results.map(item => {
+                        return Story.getStoryById(item.story);      
                     });
-                }, err => {
-                    return res.status(403).send({ 
-                        success: false, 
-                        message: 'Error fetching feed' 
-                    });
-                })
-               
-            }
-       }).sort({"_id": -1}).limit(15);
-   }
+                    
+                    Promise.all(storyPromises).then(values => {
+                        return res.status(200).send({ 
+                            _embedded: values 
+                        });
+                    }, err => {
+                        throw(err);
+                    })
+                
+                }
+            }).sort({"_id": -1}).limit(15);
+        }
+  } 
+  catch (err) {
+    console.error(err);
+    return res.status(500).json({success:false, message: "Something gone wrong"});
+  }
 }

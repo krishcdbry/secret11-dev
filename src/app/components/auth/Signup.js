@@ -2,7 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import { createActionUserLoggedIn } from '../../actions/actions';
 import { SERVER, USER_SIGNUP_API } from '../../config/network';
-import {customAlert} from '../../helpers/utils';
+import {
+    customAlert, 
+    customError
+} from '../../helpers/utils';
 
 class Signup extends React.Component {
     constructor(context, props) {
@@ -44,8 +47,13 @@ class Signup extends React.Component {
         })
         .then((res) => res.json())
         .then((data) =>  {
-            userLoggedIn(data.userData, data.token)
-            customAlert("Welcome! <br/> "+ data.userData.username);
+            if (data.auth) {
+                userLoggedIn(data.userData, data.token)
+                customAlert("Welcome! <br/> "+ data.userData.username);
+            }
+            else {
+                customError(data.message);
+            }
         })
         .catch((err)=>console.log(err))
     }
@@ -63,7 +71,7 @@ class Signup extends React.Component {
                     <label>Password</label>
                     <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
                 </div>
-                <div className="signup-item">
+                <div className="signup-item submit">
                     <a href="javascript:;" onClick={this._signUp.bind(this)} className="notify-btn">Sign up</a>
                 </div>
             </div>

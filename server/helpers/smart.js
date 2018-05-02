@@ -3,7 +3,7 @@ let config = require('../config/secret');
 
 module.exports.prepareUser = (data) => {
     let {username, image, description, gender, _id} = data;
-    console.log(data);
+
     return {
         id: _id,
         username,
@@ -11,6 +11,11 @@ module.exports.prepareUser = (data) => {
         description,
         gender,
     }
+}
+
+module.exports.validUser = (user) => {
+    let regex = /^[a-zA-Z][a-zA-Z0-9_]{2,}$/
+    return regex.test(user);
 }
 
 module.exports.formatDate = (input) => {

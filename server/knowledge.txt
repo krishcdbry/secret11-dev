@@ -1,0 +1,5 @@
+
+
+nohup node server.js &
+
+screen

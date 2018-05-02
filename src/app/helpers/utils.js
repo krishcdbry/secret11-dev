@@ -10,11 +10,27 @@ const customAlert = (message, isReload) => {
     
     setTimeout(function() {
       elem.style.display = 'none';
-      if (isReload) {
+      if (isReload) {''
         window.location = '/';
       }
     }, 3000)
   }
+
+const customError = (message, isReload) => {
+    let elem = document.getElementById('global-error');
+    let error = document.getElementById('error-message');
+    
+    error.innerHTML = message;
+    elem.style.display = "block";;
+  
+    setTimeout(function() {
+      elem.style.display = "none";
+      if (isReload) {''
+        window.location = '/';
+      }
+    }, 4000)
+}
+
 
 const fillProgress = () => {
     var progress = document.getElementById('progress-bar-live');
@@ -35,5 +51,6 @@ const fillProgress = () => {
   
   export {
     customAlert,
-    fillProgress
+    fillProgress,
+    customError
   }

@@ -177,7 +177,7 @@ class Storyitem extends React.Component {
                 let key = random();
                 let link = "/tag/"+item.name;
                 storyTagsContent.push(
-                    <Link to={link} key={key}><span className="tag">{item.name}</span></Link>
+                    <Link to={link} key={key} className="tag"><span>{item.name}</span></Link>
                 )
             });
         }
@@ -220,10 +220,12 @@ class Storyitem extends React.Component {
             )
         })
 
-        if (story.title.length > 0) {
-            storyTitleContent = (<div className="story-title">
-                {story.title.trim()}
-            </div>)
+        if (story.title) {
+            if (story.title.length > 0) {
+                storyTitleContent = (<div className="story-title">
+                    {story.title.trim()}
+                </div>)
+            }
         }
 
         if(story.upvote.count > 0) {

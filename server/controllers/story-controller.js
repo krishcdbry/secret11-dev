@@ -78,106 +78,21 @@ let saveStory = (story, tags, userId) => {
     });
 }
 
-module.exports.publish = (req, res, next) => {
-    response = res;
-    let timestamp = (new Date()).toUTCString();
-    
-    if (req.userId) {
-        let {userId} = req;
-        currentUserID = userId;
-        let {tags, content, type, title} = req.body;
-        
-        let story = new Story({
-            content,
-            title,
-            author : userId,
-            type,
-            active: true,
-            timestamp,
-        });
-
-        return saveStory(story, tags, userId)
-        
-    }
-    else {
-        return returnErrorResonse("Unauthorized Access")
-    }
-}
-
-module.exports.feed = (req, res, next) => {
-    response = res;
-    if (req.userId) {
-        currentUserID = req.userId;
-        Story.find({active: true}, (err, results) => {
-            let storyPromises = results.map(item => {
-                return this.getStoryData(item);
-            });
-            
-            Promise.all(storyPromises).then(values => {
-                return res.status(200).send({ 
-                    _embedded: values 
-                });
-            }, err => {
-                return res.status(403).send({ 
-                    success: false, 
-                    message: 'Error fetching feed' 
-                });
-            })
-        }).sort({"_id": -1}).limit(15);
-    }
-    else {
-        return res.status(403).send({ 
-            success: false, 
-            message: 'Unauthorized request' 
-        });
-    }
-}
-
-module.exports.feedByUser = (req, res, next) => {
-    response = res;
-    if (req.userId) {
-        currentUserID = req.userId;
-        let user = req.params.user || req.userId;
-        Story.find({active: true, author: user}, (err, results) => {
-            let storyPromises = results.map(item => {
-                return this.getStoryData(item);
-            });
-            
-            Promise.all(storyPromises).then(values => {
-                return res.status(200).send({ 
-                    _embedded: values 
-                });
-            }, err => {
-                return res.status(403).send({ 
-                    success: false, 
-                    message: 'Error fetching feed' 
-                });
-            })
-        }).sort({"_id": -1}).limit(15);
-    }
-    else {
-        return res.status(403).send({ 
-            success: false, 
-            message: 'Unauthorized request' 
-        });
-    }
-}
-
 module.exports.getStoryById = (id) => {
-   return new Promise((resolve, reject)=> {
-            Story.findById(id, (err, results) => {
-                if (err || !results) {
-                    resolve(null);
-                }
-                this.getStoryData(results).then(story => {
-                    resolve(story);
-                }, err => {
-                    resolve(null);
-                })
-            })
-   });
-}
-
+    return new Promise((resolve, reject)=> {
+             Story.findById(id, (err, results) => {
+                 if (err || !results) {
+                     resolve(null);
+                 }
+                 this.getStoryData(results).then(story => {
+                     resolve(story);
+                 }, err => {
+                     resolve(null);
+                 })
+             })
+    });
+ }
+ 
 
 module.exports.getStoryData = (story) => {
 
@@ -226,8 +141,8 @@ module.exports.getStoryData = (story) => {
             data : []
         };
 
-         // Preparing Votes
-         let voteObj = {
+        // Preparing Votes
+        let voteObj = {
             count: values[4],
             voted : values[5] > 0 ? true : false
         };
@@ -247,151 +162,278 @@ module.exports.getStoryData = (story) => {
         return null;
     })
 }
+ 
+module.exports.publish = (req, res, next) => {
+    response = res;
+    let timestamp = (new Date()).toUTCString();
+    
+    if (req.userId) {
+        let {userId} = req;
+        currentUserID = userId;
+        let {tags, content, type, title} = req.body;
+        
+        let story = new Story({
+            content,
+            title,
+            author : userId,
+            type,
+            active: true,
+            timestamp,
+        });
+
+        return saveStory(story, tags, userId)
+        
+    }
+    else {
+        return returnErrorResonse("Unauthorized Access")
+    }
+}
+
+module.exports.feed = (req, res, next) => {
+    try {
+        response = res;
+        if (req.userId) {
+            currentUserID = req.userId;
+            Story.find({active: true}, (err, results) => {
+                if (err) {
+                    throw(err);
+                }
+                let storyPromises = results.map(item => {
+                    return this.getStoryData(item);
+                });
+                
+                Promise.all(storyPromises).then(values => {
+                    return res.status(200).send({ 
+                        _embedded: values 
+                    });
+                }, err => {
+                    throw(err);
+                });
+                
+            }).sort({"_id": -1}).limit(15);
+        }
+        else {
+            return res.status(403).send({ 
+                success: false, 
+                message: 'Unauthorized request' 
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ 
+            success: false, 
+            message: 'Error fetching feed' 
+        });
+    }
+}
+
+module.exports.feedByUser = (req, res, next) => {
+    try {
+        response = res;
+        if (req.userId) {
+            currentUserID = req.userId;
+            let user = req.params.user || req.userId;
+            Story.find({active: true, author: user}, (err, results) => {
+
+                if (err) {
+                    throw(err);
+                }
+
+                let storyPromises = results.map(item => {
+                    return this.getStoryData(item);
+                });
+                
+                Promise.all(storyPromises).then(values => {
+
+                    return res.status(200).send({ 
+                        _embedded: values 
+                    });
+
+                }, err => {
+                    throw(err);
+                });
+                
+            }).sort({"_id": -1}).limit(15);
+        }
+        else {
+            return res.status(403).send({ 
+                success: false, 
+                message: 'Unauthorized request' 
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Error fetching feed"});
+    }    
+}
 
 module.exports.addReply = (req, res) => {
-   let reply = req.body.content;
-   let story = req.body.story;
-   let userId  = req.userId;
-   currentUserID = userId;
-   let timestamp = (new Date()).toUTCString();
+    try {
+        let reply = req.body.content;
+        let story = req.body.story;
+        let userId  = req.userId;
+        currentUserID = userId;
+        let timestamp = (new Date()).toUTCString();
 
-   let replyData = new Reply({
-       reply,
-       story,
-       user : userId,
-       timestamp
-   })
+        let replyData = new Reply({
+            reply,
+            story,
+            user : userId,
+            timestamp
+        })
 
-   replyData.save((err, savedReply) => {
-       if (err) {
-        return returnErrorResonse("Unable to save", 400);
-       }
-        User.findById(userId, (err, user) => {
+        replyData.save((err, savedReply) => {
             if (err) {
-                return returnErrorResonse("Invalid user", 400);
+                throw(err);
             }
-        
-            let replyObj = {
-                reply : savedReply.reply,
-                user : Smart.prepareUser(user)
-            }
-            return res.status(200).send({
-                success: true,
-                reply : replyObj
+            User.findById(userId, (err, user) => {
+                if (err) {
+                    throw("Invalid user" + err);
+                }
+            
+                let replyObj = {
+                    reply : savedReply.reply,
+                    user : Smart.prepareUser(user)
+                }
+                return res.status(200).send({
+                    success: true,
+                    reply : replyObj
+                })
             })
         })
-   })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
 }
 
 module.exports.replyFeed = (req, res) => {
-    let {story} = req.params;
-    let {userId} = req.userId;
-    currentUserID = userId;
-    if (story) {
-        Reply.find({"story":story}, (err, results) => {
-             if (!err && results) {
-                let feed = [];
-                let replyPromises = results.map(item => {
-                    return new Promise((resolve, reject) => {
-                        ProfileController.getUser(item.user)
-                            .then(userData => {
-                                let user = Smart.prepareUser(userData);
-                                let {reply, timestamp, _id} = item;
-                                let dateTimeString = Smart.formatDate(timestamp);
+    try {
+        let {story} = req.params;
+        let {userId} = req.userId;
+        currentUserID = userId;
+        if (story) {
+            Reply.find({"story":story}, (err, results) => {
+                if (!err && results) {
+                    let feed = [];
+                    let replyPromises = results.map(item => {
+                        return new Promise((resolve, reject) => {
+                            ProfileController.getUser(item.user)
+                                .then(userData => {
+                                    let user = Smart.prepareUser(userData);
+                                    let {reply, timestamp, _id} = item;
+                                    let dateTimeString = Smart.formatDate(timestamp);
 
-                                let replyObj = {
-                                    id : _id,
-                                    reply,
-                                    user,
-                                    timestamp : dateTimeString
-                                }
-                                resolve(replyObj);
-                            })
+                                    let replyObj = {
+                                        id : _id,
+                                        reply,
+                                        user,
+                                        timestamp : dateTimeString
+                                    }
+                                    resolve(replyObj);
+                                })
+                        })
                     })
-                })
 
-                Promise.all(replyPromises).then(feed => {
-                    return res.status(200).send({
-                        success: true,
-                        _embedded : feed
+                    Promise.all(replyPromises).then(feed => {
+                        return res.status(200).send({
+                            success: true,
+                            _embedded : feed
+                        })
+                    }, err => {
+                        return returnErrorResonse("Unable to fetch feed", 400);
                     })
-                }, err => {
+                }
+                else {
                     return returnErrorResonse("Unable to fetch feed", 400);
-                })
-             }
-             else {
-                return returnErrorResonse("Unable to fetch feed", 400);
-             }
-        }).sort({"_id": -1}).limit(15);
+                }
+            }).sort({"_id": -1}).limit(15);
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
     }
  };
 
 
 module.exports.upVote = (req, res) => {
-    response = res;
-    let {userId} = req;
-    currentUserID = userId;
-    let {story} = req.body;
-    let timestamp = (new Date()).toUTCString();
+    try {
+        response = res;
+        let {userId} = req;
+        currentUserID = userId;
+        let {story} = req.body;
+        let timestamp = (new Date()).toUTCString();
 
-    let voteObj = new Vote({
-        story,
-        user : userId,
-        timestamp
-    })
+        let voteObj = new Vote({
+            story,
+            user : userId,
+            timestamp
+        })
 
-    voteObj.save((err, saved) => {
-        if (saved) {
-            Promise.resolve(getStoryVoteCount(story)).then(votes => {
-                res.status(200).send({
-                    success: true,
-                    upvote : {
-                        count : votes,
-                        voted: true
-                    } 
+        voteObj.save((err, saved) => {
+            if (err) {
+                throw(err);
+            }
+            if (saved) {
+                Promise.resolve(getStoryVoteCount(story)).then(votes => {
+                    res.status(200).send({
+                        success: true,
+                        upvote : {
+                            count : votes,
+                            voted: true
+                        } 
+                    })
+                }, err => {
+                    throw(err);
                 })
-            }, err => {
-                return returnErrorResonse("Vote operation failed", 400);
-            })
-        }
-        else {
-            return returnErrorResonse("Vote operation failed", 400);
-        }
-    })
+            }
+        })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }    
 }
 
 module.exports.downVote = (req, res) => {
-    response = res;
-    let {userId} = req;
-    currentUserID = userId;
-    let {story} = req.params;
+    try {
+        response = res;
+        let {userId} = req;
+        currentUserID = userId;
+        let {story} = req.params;
 
-    Vote.find({"story": story, "user": userId}, (err, results) => {
-        if (err || !results) {
-            return returnErrorResonse("Unable to remove vote", 400);
-        }
-        let voteData = results[0];
-        if (voteData.user == userId) {
-            Vote.remove({"_id" : voteData._id}, (err, saved) => {
-                if (saved) {
-                    Promise.resolve(getStoryVoteCount(voteData.story)).then(votes => {
-                        res.status(200).send({
-                            success: true,
-                            upvote : {
-                                count : votes,
-                                voted: false
-                            } 
-                        })
-                    }, err => {
-                        return returnErrorResonse("Vote operation failed", 400);
-                    });
-                }
-                else {
-                    return returnErrorResonse("Unable to remove vote", 400);
-                }
-            })
-        } else {
-            return returnErrorResonse("Unauthorized access", 403);
-        }
-    })
+        Vote.find({"story": story, "user": userId}, (err, results) => {
+            if (err || !results) {
+                throw("Unable to find story")
+            }
+            let voteData = results[0];
+            if (voteData.user == userId) {
+                Vote.remove({"_id" : voteData._id}, (err, saved) => {
+                    if (err) {
+                        throw(err);
+                    }
+                    if (saved) {
+                        Promise.resolve(getStoryVoteCount(voteData.story)).then(votes => {
+                            res.status(200).send({
+                                success: true,
+                                upvote : {
+                                    count : votes,
+                                    voted: false
+                                } 
+                            })
+                        }, err => {
+                            throw("");
+                        });
+                    }
+                    else {
+                        throw("");
+                    }
+                })
+            } else {
+                throw("");
+            }
+        })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
 }

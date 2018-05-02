@@ -3,7 +3,7 @@ const LOCAL_SERVER = "http://api.secret11:9000";
 const DEV_SERVER = "http://api-dev.secret11.com:9000";
 const LIVE_SERVER = "http://api.secret11.com:9000";
 
-const SERVER = LOCAL_SERVER;
+const SERVER = LIVE_SERVER;
 
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";

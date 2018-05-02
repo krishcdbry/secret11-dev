@@ -5,7 +5,7 @@ let security = require("../helpers/security");
 let firewall = (req, res, next) => {
     if (!req.headers['x-access-token']) {
         return res.status(403).send({ 
-            auth: false, 
+            success: false, 
             message: 'No token provided.' 
         });
     }
@@ -14,7 +14,7 @@ let firewall = (req, res, next) => {
     let token = security.decryptToken(originalToken);
     if (!token) {
         return res.status(403).send({ 
-            auth: false, 
+            success: false, 
             message: 'No token provided.' 
         });
     }
@@ -22,7 +22,7 @@ let firewall = (req, res, next) => {
     jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {
             return res.status(403).send({
-                auth: false,
+                success: false,
                 message: 'Failed to authenticate token.' 
             });
         }

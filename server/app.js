@@ -3,12 +3,14 @@
 let express = require('express');
 let app = express();
 let mongoose = require('mongoose');
+var MongoClient = require('mongodb').MongoClient;
 let bodyParser = require('body-parser');
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let path = require('path');
 let connectMultipart = require('connect-multiparty');
 let multipartMiddleware = connectMultipart();
+let config = require('./config/secret');
 
 // Controllers
 let authController = require('./controllers/auth-controller');
@@ -16,15 +18,33 @@ let profileController = require('./controllers/profile-controller');
 let storyController = require('./controllers/story-controller');
 let tagController = require('./controllers/tag-controller');
 
-// Datasets
-let story = require('./models/story.js');
-let user = require('./models/users.js');
-
 // Firewall for router
 let firewall = require('./helpers/firewall');
 
 // DB connection
 mongoose.connect('mongodb://localhost:27017/secret11-dbs');
+
+// let dbUrl = `mongodb+srv://krishcdbry:${config.DB_AUTH_PASSWORD}@cluster0-zjz1z.mongodb.net/secret11-dbs`;
+// MongoClient.connect(dbUrl, (err, client) => {
+//     // connection
+//     //console.log(connection);
+//    // console.log(client);
+
+//     const collection = client.db("secret11-dbs").collection("user");
+//     // perform actions on the collection object
+    
+//     let user = new User({
+// 		username : "hehe"
+// 	});
+
+//     collection.save({
+// 		username : "hehe"
+// 	},(err, res) => {
+//         console.log(res);
+//     })
+//     client.close();
+// });
+
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
@@ -91,3 +111,5 @@ app.get('/tag/feed/:tag', firewall, tagController.tagFeed)
 http.listen('9000', function () {
 	console.log("Working dude !!");
 });
+
+module.exports = app;

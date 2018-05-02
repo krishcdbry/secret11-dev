@@ -18,14 +18,17 @@ render(
                     <Switch>
 
                         <Route path="/profile/:id" render={(props) => { 
+                            fillProgress();
                             return <App route="profile" {...props} /> 
                         }}/> 
 
                         <Route path="/tag/:id" render={(props) => { 
+                            fillProgress();
                             return <App route="tag" {...props} /> 
                         }}/> 
                     
                         <Route path="/:id" render={(props) => { 
+                            fillProgress();
                             return <App route="user" {...props} /> 
                         }}/> 
 
