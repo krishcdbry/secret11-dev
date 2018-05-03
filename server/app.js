@@ -17,6 +17,7 @@ let authController = require('./controllers/auth-controller');
 let profileController = require('./controllers/profile-controller');
 let storyController = require('./controllers/story-controller');
 let tagController = require('./controllers/tag-controller');
+let searchController = require('./controllers/search-controller');
 
 // Firewall for router
 let firewall = require('./helpers/firewall');
@@ -99,6 +100,10 @@ app.delete('/story/vote/:story', firewall, storyController.downVote);
 // Tag
 app.get('/tag/:name', firewall, tagController.tagData);
 app.get('/tag/feed/:tag', firewall, tagController.tagFeed)
+
+
+// Search
+app.get('/search/:key', firewall, searchController.search);
 
 // app.post('/api/user/profile-photo', multipartMiddleware, profileController.uploadPhoto);
 

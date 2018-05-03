@@ -87,12 +87,17 @@ module.exports.getUser = (id) => {
 
 module.exports.me = (req, res, next) => {
     try {    
+        response = res;
         if (req.userId) {
+            console.log(req.userId);
             User.findById(req.userId, (err, user) => {
-                if (err) {
+                console.log(err, user);
+                if (err || !user) {
                     return returnErrorResonse('Authentication failed');
                 }
-                return res.status(200).send(Smart.prepareUser(user));
+                else {
+                    return res.status(200).send(Smart.prepareUser(user));
+                }
             });
         }
         else {

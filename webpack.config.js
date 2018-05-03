@@ -25,7 +25,7 @@ module.exports = {
         new webpack.DefinePlugin({
                  'process.env.NODE_ENV': '"production"'
         }),
-        new BundleAnalyzerPlugin(),
+      //  new BundleAnalyzerPlugin(),
         new UglifyJsPlugin()
     ]
 }

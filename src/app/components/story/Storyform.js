@@ -6,7 +6,9 @@ import {
     STORY_PUBLISH_API, 
     getTokenHeaders 
 } from '../../config/network';
+import SearchBox from '../widgets/SearchBox';
 import {customAlert} from '../../helpers/utils';
+import {Link} from 'react-router-dom';
 
 class Storyform extends React.Component {
     constructor(context, props) {
@@ -16,7 +18,10 @@ class Storyform extends React.Component {
             tagValue : '',
             question : false,
             story: '',
-            title : ''
+            qstory: '',
+            title : '',
+            openSearch: false,
+            image : '',
         }
     }
 
@@ -25,7 +30,11 @@ class Storyform extends React.Component {
             tags : [],
             tagValue : '',
             question : false,
-            story: ''
+            story: '',
+            qstory: '',
+            title : '',
+            openSearch: false,
+            image : '',
         });
     }
 
@@ -35,9 +44,29 @@ class Storyform extends React.Component {
         })
     }
 
-    _handleTitleChange(e) {
+    _handleQStoryChange(e) {
+        let val = e.target.value;
+        if (val > 250) {
+            return false;
+        }
+        else {
+            val = val.substr(0,249);
+        }
         this.setState({
-            title: e.target.value
+            qstory: val
+        })
+    }
+
+    _handleTitleChange(e) {
+        let val = e.target.value;
+        if (val > 250) {
+            return false;
+        }
+        else {
+            val = val.substr(0,249);
+        }
+        this.setState({
+            title: val
         })
     }
     
@@ -82,14 +111,19 @@ class Storyform extends React.Component {
 
     _publishStory() {
         let {onSave} = this.props;
+
         let storyData = {
             content : this.state.story,
-            type : (this.state.question) ? 'Q' : 'S',
-            tags : this.state.tags.join(",")
+            type : 'S',
+            tags : this.state.tags.join(","),
+            title: this.state.title,
+            image : this.state.image
         }
 
-        if (!this.state.question) {
-            storyData.title = this.state.title;
+        if (this.state.question) {
+            storyData.content = this.state.qstory;
+            storyData.type = 'Q';
+            delete storyData.title;
         }
         
         fetch(SERVER+STORY_PUBLISH_API, {
@@ -100,17 +134,50 @@ class Storyform extends React.Component {
         .then((res) => res.json())
         .then((data) => {
             if (data.success) {
-                customAlert("Published")
-                onSave(data.story)
+                customAlert("Published");
                 this._resetState();
+                onSave(data.story);
             }
         })
         .catch((err)=>console.log(err))
     }
+
+    _openSearchBox() {
+        let val = !this.state.openSearch;
+        this.setState({
+            openSearch: val
+        })
+    }
+
+    _onSelect(val) {
+        if (val.length > 0) {
+            this.setState({
+                image : val,
+                openSearch: false
+            })
+        }
+    }
     
+    _onClose() {
+        this.setState({
+            openSearch: false
+        })
+    }
+
     render() {
-        let {tags} = this.state;
+        let {tags, question, openSearch, image} = this.state;
         let divComponent = [];
+        let SearchBoxComponent = null;
+        let imageComponent = null;
+        let textareaStyle = {
+            'height' : 'calc(100vh - 300px)'
+        }
+
+        if (image.length > 0) {
+            textareaStyle = {
+                'height' : 'calc(100vh - 450px)'
+            }
+        }
         
         if (tags.length > 0) {
             tags.forEach(item => {
@@ -122,37 +189,63 @@ class Storyform extends React.Component {
         }
 
         let inputClass = "";
-        let titleInputContent = (
-            <input type="text"
-                   autoFocus="true" 
-                   className="story-title" 
-                   placeholder="Title"
-                   value={this.state.title}
-                   onChange={this._handleTitleChange.bind(this)}
-            />
+        let formInputContent = (
+            <div>
+                <input type="text"
+                    autoFocus="true" 
+                    className="story-title" 
+                    placeholder="Title (Max 250 Characters)"
+                    value={this.state.title}
+                    onChange={this._handleTitleChange.bind(this)}
+                />
+                <textarea placeholder="Start typing" 
+                          autoFocus="true" 
+                          value={this.state.story}
+                          style={textareaStyle}
+                          onChange={this._handleStoryChange.bind(this)}></textarea>
+            </div>
         );
 
-        if (this.state.question) {
+        if (question) {
             inputClass = "question";
-            titleInputContent = null;
+            formInputContent = (
+                <textarea placeholder="Start typing  (Max 250 Characters)" 
+                          autoFocus="true" 
+                          className="question" 
+                          style={textareaStyle}
+                          value={this.state.qstory}
+                          onChange={this._handleQStoryChange.bind(this)}></textarea>
+            );
+        }
+
+        if (openSearch) {
+            SearchBoxComponent = (
+                <SearchBox onSelect={this._onSelect.bind(this)} onClose={this._onClose.bind(this)}/>
+            )
+        }
+
+        if (image.length > 0) {
+            imageComponent = (
+                <img src={this.state.image} style={{
+                    'max-height' : '200px' 
+                }}/>
+            )
         }
 
         return (
             <div className="story-form">
                 <br/>
-                <div className="pretty p-icon p-round p-pulse">
-                    <input type="checkbox" value={this.state.question} onChange={this._handleQuestionChange.bind(this)}/>
-                    <div className="state p-success">
-                        <i className="icon mdi mdi-check"></i>
-                        <label>Question</label>
+                <div class="question-switcher">
+                    <div className="pretty p-icon p-round p-pulse">
+                        <input type="checkbox" value={this.state.question} onChange={this._handleQuestionChange.bind(this)}/>
+                        <div className="state p-success">
+                            <i className="icon mdi mdi-check"></i>
+                            <label>Question</label>
+                        </div>
                     </div>
                 </div>
-                {titleInputContent}
-                <textarea placeholder="Start typing" 
-                          autoFocus="true" 
-                          className={inputClass} 
-                          value={this.state.story}
-                          onChange={this._handleStoryChange.bind(this)}></textarea>
+                {formInputContent}
+                {imageComponent}
                 <div className="section-other">
                     <div className="tag-input">
                         {divComponent}
@@ -163,8 +256,14 @@ class Storyform extends React.Component {
                             onChange={this._handleTagChange.bind(this)}/>
                     </div>
                     <div className="publish-section">
-                        <a href="javascript:;" className="app-button" onClick={this._publishStory.bind(this)}>Publish</a>
+                        <a href="javascript:;" className="select-image" onClick={this._openSearchBox.bind(this)}><i className="fa fa-image"></i></a>
+                        
+                        <div className="publish-actions">
+                            <Link to="/" className="app-button inverse">Cancel</Link>
+                            <a href="javascript:;" className="app-button" onClick={this._publishStory.bind(this)}>Publish</a>
+                        </div>
                     </div>
+                    {SearchBoxComponent}
                 </div>
             </div>
         )

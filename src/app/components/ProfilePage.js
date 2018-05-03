@@ -102,6 +102,9 @@ class ProfilePage extends React.Component {
                             <br/>
                             <img src={profile.image} className="profile-pic-big"/>
                             <h1>{profile.username}</h1>
+                            <div class="description">
+                                {profile.description}
+                            </div>
                             <div className="profile-stats">
                                 <div className="stats-item story">
                                     <span className="count">{profile.stats.story}</span>

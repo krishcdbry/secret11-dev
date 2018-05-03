@@ -26,7 +26,7 @@ class Header extends React.Component {
         })
         .then((res) => res.json())
         .then((data) =>  {
-            if (data.auth)  {
+            if (data.success)  {
                 onUserLoggedOut()
                 document.body.className = "landing-background";
             }

@@ -68,14 +68,18 @@ class Home extends React.Component {
             imgSrc = "/dist/assets/images/cancel.png";
         }
         
+        // onClick={this._toggleStoryForm.bind(this)} 
+        
         return (
             <div className="home">
                 <Header/>
-                <div className="home-content">
+                <div className="home-content home-page">
                     <div className="left-menu">
-                        <div className="create" onClick={this._toggleStoryForm.bind(this)} style={this.state.iconStyle}>
-                            <img src={imgSrc}/>
-                        </div>
+                        <Link to="/story/new">
+                            <div className="create" style={this.state.iconStyle}>
+                                <img src={imgSrc}/>
+                            </div>
+                        </Link>
                    </div>
                    <div className="story-form-wrapper" style={this.state.formStyle}>
                         {storyFormComponent}

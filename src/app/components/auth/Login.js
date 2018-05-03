@@ -45,7 +45,7 @@ class Login extends React.Component {
         })
         .then((res) => res.json())
         .then((data) =>  {
-            if (data.auth)  {
+            if (data.success)  {
                 document.body.className = "home";
                 userLoggedIn(data.userData, data.token);
                 customAlert("Welcome! <br/> "+ data.userData.username);

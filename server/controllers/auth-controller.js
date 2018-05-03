@@ -30,7 +30,7 @@ module.exports.signup = (req, res) => {
 		let user = new User({
 			username,
 			password : hashedPassword,
-			image : 'user-profile-'+Math.floor(Math.random()*209)+1,
+			image : 'user-profile-'+(Math.floor(Math.random()*209)+1)+'.png',
 			description: "",
 			gender: gender,
 			_enabled : true,

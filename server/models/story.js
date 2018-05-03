@@ -7,6 +7,7 @@ var storySchema = new Schema({
 	type: String,
 	author: String,
 	active: Boolean,
+	image: String,
 	timestamp: String
 });
 

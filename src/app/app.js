@@ -14,6 +14,7 @@ import { createActionUserLoggedIn } from './actions/actions';
 import TagPage from './components/TagPage';
 import ProfilePage from './components/ProfilePage';
 import ProfileEditPage from './components/ProfileEditPage';
+import StoryPage from './components/StoryPage';
 import NotFound from './components/404';
 
 class App extends React.Component {
@@ -48,8 +49,13 @@ class App extends React.Component {
                     return res.json();
                 })
                 .then(res => {
-                    document.body.className = "home";
-                    userLoggedIn(res, _token)
+                    if (res.id) {
+                        document.body.className = "home";
+                        userLoggedIn(res, _token);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);                    
                 })
         }
     }
@@ -124,6 +130,16 @@ class App extends React.Component {
                     }
                     break;
                 }
+                case "story" : {
+                    if (routeId == 'new') {
+                        routeComponent = <StoryPage/>
+                    }
+                    else {
+                        routeComponent = <NotFound/>
+                    }
+                    break;
+                }
+
                 default : {
                     routeComponent = <NotFound/>
                 }

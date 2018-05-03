@@ -5,6 +5,7 @@ let Answer = require('../models/answer');
 let Tag = require('../models/tag');
 let Vote = require('../models/vote');
 let Reply = require('../models/reply');
+let Activity = require('../models/activity');
 
 let Storytag = require('../models/storytag');
 let ProfileController = require('./profile-controller');
@@ -51,11 +52,48 @@ let returnStory = (storyInserted) => {
     })
 }
 
+let newStoryActivity = (story, userId) => {
+    let timestamp = (new Date()).toUTCString();;
+    let activity = new Activity({
+        type: 'new',
+        story,
+        user : userId,
+        timestamp
+    })
+    return activity.save((err, res) => {})
+}
+
+let newReplyActivity = (story, reply, userId) => {
+    let timestamp = (new Date()).toUTCString();;
+    let activity = new Activity({
+        type: 'reply',
+        story,
+        reply,
+        user : userId,
+        timestamp
+    })
+    return activity.save((err, res) => {})
+}
+
+let newVoteActivity = (story, userId) => {
+    let timestamp = (new Date()).toUTCString();;
+    let activity = new Activity({
+        type: 'vote',
+        story,
+        user : userId,
+        timestamp
+    })
+    return activity.save((err, res) => {})
+}
+
 let saveStory = (story, tags, userId) => {
     story.save((err, storyInserted) => {
         if (err) {
             return returnErrorResonse("Unable to publish", 400);
         }
+        
+        // Save activity
+        newStoryActivity(storyInserted._id, userId);
 
         if (tags.length > 0) {
             tags = tags.split(",");
@@ -94,9 +132,10 @@ module.exports.getStoryById = (id) => {
  }
  
 
-module.exports.getStoryData = (story) => {
 
-    let {content, _id, type, timestamp, author, title} = story;
+ module.exports.getStoryData = (story) => {
+
+    let {content, _id, type, timestamp, image, author, title} = story;
 
     let dateTimeString = Smart.formatDate(timestamp);
 
@@ -106,6 +145,7 @@ module.exports.getStoryData = (story) => {
         type,
         timestamp : dateTimeString,
         id : _id,
+        image
     }
 
     let userData = ProfileController.getUser(author);
@@ -170,7 +210,7 @@ module.exports.publish = (req, res, next) => {
     if (req.userId) {
         let {userId} = req;
         currentUserID = userId;
-        let {tags, content, type, title} = req.body;
+        let {tags, content, type, title, image} = req.body;
         
         let story = new Story({
             content,
@@ -179,6 +219,7 @@ module.exports.publish = (req, res, next) => {
             type,
             active: true,
             timestamp,
+            image
         });
 
         return saveStory(story, tags, userId)
@@ -286,6 +327,9 @@ module.exports.addReply = (req, res) => {
             if (err) {
                 throw(err);
             }
+
+            newReplyActivity(story, savedReply._id, userId);
+
             User.findById(userId, (err, user) => {
                 if (err) {
                     throw("Invalid user" + err);
@@ -356,7 +400,8 @@ module.exports.replyFeed = (req, res) => {
  };
 
 
-module.exports.upVote = (req, res) => {
+
+ module.exports.upVote = (req, res) => {
     try {
         response = res;
         let {userId} = req;
@@ -375,6 +420,8 @@ module.exports.upVote = (req, res) => {
                 throw(err);
             }
             if (saved) {
+                newVoteActivity(story, userId);
+
                 Promise.resolve(getStoryVoteCount(story)).then(votes => {
                     res.status(200).send({
                         success: true,
@@ -437,3 +484,37 @@ module.exports.downVote = (req, res) => {
         return res.status(500).json({success:false, message: "Something gone wrong"});
     }
 }
+
+
+module.exports.tagFeed = (req, res) => {
+    try {  
+          if (req.userId) {
+                Activity.distinct('story', (err, results) => {
+                  if (err) {
+                      throw(err);
+                  }
+                  console.log(results);
+                  if (!err && results) {
+                  
+                      let storyPromises = results.map(item => {
+                          return this.getStoryById(item);      
+                      });
+
+                      Promise.all(storyPromises).then(values => {
+                          console.log(values);
+                          return res.status(200).send({ 
+                              _embedded: values 
+                          });
+                      }, err => {
+                          throw(err);
+                      })
+                  
+                  }
+              }).sort({"_id": -1});
+          }
+    } 
+    catch (err) {
+      console.error(err);
+      return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
+  }

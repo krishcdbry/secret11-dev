@@ -21,12 +21,15 @@ class Storyitem extends React.Component {
             openInput : false,
             reply: "",
             replyData : [],
-            voting: false
+            voting: false,
+            fullStory: false
         }
     }
     
     _openInput () {
-        this._loadReplies();
+        if (this.state.story.type == 'Q') {
+            this._loadAnswers();
+        }
         let open = !this.state.openInput;
         this.setState({
             openInput: open
@@ -146,8 +149,14 @@ class Storyitem extends React.Component {
         }
     }
 
+    _showFullStory() {
+        this.setState({
+            fullStory: true
+        })
+    }
+
     render() {
-        let {story} = this.state;
+        let {story, fullStory} = this.state;
         let storyClass = "story-item";
         let questionIndicator = null;
         let storyTagsContent = [];
@@ -157,9 +166,42 @@ class Storyitem extends React.Component {
         let profileLink = "/"+story.author.username;
         let storyTitleContent = null;
         let upvoteCountContent = null;
+        let storyImageComponent = null;
+        let displayStoryComponent = null;
+        let storyValue = story.content.trim();
+        let imageStyle = {
+            'max-height': '200px',
+            'float' : 'right',
+            'max-width' : '95%'
+        }
+
+        if (storyValue.length > 350 && !fullStory) {
+            let trimmedStory = storyValue.substr(0, 350) + '...';
+            displayStoryComponent = (
+                <span>
+                    {trimmedStory}
+                    <a href="javascript:;" className="view-more" onClick={this._showFullStory.bind(this)}>View more</a>
+                </span>
+            )
+        }
+        else {
+            displayStoryComponent = (
+                <span>
+                    {storyValue}
+                </span>
+            )
+        }
+
+        if (story.image) {
+            if (story.image.length > 0) {
+                storyImageComponent = <img src={story.image} style={imageStyle}/>
+            }
+        }
 
         let optionContent = (
-            <a href="#" className="reply" onClick={this._openInput.bind(this)}>Reply <span className="count">{story.reply.count} </span></a>
+            <a href="#" className="reply" onClick={this._openInput.bind(this)}>Reply 
+                <span className="count">{story.reply.count} </span>
+            </a>
         )
 
         if (story.type == "Q") {
@@ -246,11 +288,12 @@ class Storyitem extends React.Component {
                 <div className="story-data">
                     <div className="text-content">
                         {storyTitleContent}
-                        {story.content.trim()}
+                        {storyImageComponent}
+                        {displayStoryComponent}
                     </div>
                     <div className="more-info">
                         <div className="author-name">
-                            {story.author.username}
+                            - {story.author.username}
                         </div>
                         <div className="story-tags">
                             {storyTagsContent}

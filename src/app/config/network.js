@@ -25,6 +25,8 @@ const STORY_DOWNVOTE_API = "/story/vote/";
 const TAG_INFO_API = "/tag/";
 const TAG_FEED_API = "/tag/feed/";
 
+const SEARCH_IMAGES_API = '/search/';
+
 const getTokenHeaders = () => {
     let _token = localStorage.getItem('x-access-token');
     let authHeaders = new Headers();
@@ -57,5 +59,7 @@ export {
     TAG_INFO_API,
     TAG_FEED_API,
 
+    SEARCH_IMAGES_API,
+    
     getTokenHeaders
 }
