@@ -1,8 +1,9 @@
 const PROTOCOL = window.location.protocol;
+const HOST = window.location.host;
 
-const LOCAL_SERVER = "api.secret11";
-const DEV_SERVER = "api-dev.secret11.com";
-const LIVE_SERVER = "api.secret11.com";
+const LOCAL_SERVER = "api";
+const DEV_SERVER = "api-dev";
+const LIVE_SERVER = "api";
 
 let PORT = "9000";
 
@@ -10,7 +11,7 @@ if (PROTOCOL == "https:") {
     PORT = "7200";
 }
 
-const SERVER = PROTOCOL+"//"+LOCAL_SERVER+":"+PORT;
+const SERVER = PROTOCOL+"//"+LIVE_SERVER+"."+HOST+":"+PORT;
 
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";
