@@ -30,7 +30,8 @@ class Signup extends React.Component {
         })
     }
 
-    _signUp() {
+    _signUp(e) {
+        e.preventDefault();
         let {userLoggedIn} = this.props;
         let userData = {
             username : this.state.username,
@@ -62,18 +63,20 @@ class Signup extends React.Component {
 
         return (
             <div className="signup-component">
-                <img src="https://assistance-wordpress.com/wp-content/uploads/2018/02/icon-account.png"/>
-                <div className="signup-item input">
-                    <label>Username</label>
-                    <input type="text" value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
-                </div>
-                <div className="signup-item input">
-                    <label>Password</label>
-                    <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
-                </div>
-                <div className="signup-item submit">
-                    <a href="javascript:;" onClick={this._signUp.bind(this)} className="notify-btn">Sign up</a>
-                </div>
+                <form onSubmit={this._signUp.bind(this)}>
+                    <img src="https://assistance-wordpress.com/wp-content/uploads/2018/02/icon-account.png"/>
+                    <div className="signup-item input">
+                        <label>Username</label>
+                        <input type="text" value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
+                    </div>
+                    <div className="signup-item input">
+                        <label>Password</label>
+                        <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
+                    </div>
+                    <div className="signup-item submit">
+                        <button type="submit" onClick={this._signUp.bind(this)} className="notify-btn">Sign up</button>
+                    </div>
+                </form>
             </div>
         )
     }

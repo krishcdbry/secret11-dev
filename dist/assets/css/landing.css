@@ -76,10 +76,7 @@ body {
 #hour, #minute, #seconds {
     font-size: 32px;
 }
-html {
-    height: 100%;
-    overflow: hidden;
-}
+
 #email-input {
     margin: 13px;
     padding: 10px 1px;

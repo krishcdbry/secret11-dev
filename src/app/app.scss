@@ -211,6 +211,10 @@ header {
         width: 98%;
     }
 
+    @media(max-width: 780px) {
+        margin-top: 87px;
+     }
+
     .left-menu {
         width: 190px;
 
@@ -233,11 +237,6 @@ header {
             transition: transform 1s;
 
             @media(max-width: 780px) {
-                z-index: 99999999;
-                position: absolute;
-                top: 60px;
-                box-shadow: 0px 1px 1px #ddd;
-                border: 1px solid #f0f0f0;
                 width: 70px;
                 height: 70px;
             } 
