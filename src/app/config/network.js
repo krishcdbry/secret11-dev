@@ -1,7 +1,7 @@
 
-const LOCAL_SERVER = "http://api.secret11:9000";
-const DEV_SERVER = "http://api-dev.secret11.com:9000";
-const LIVE_SERVER = "http://api.secret11.com:9000";
+const LOCAL_SERVER = "https://api.secret11:9000";
+const DEV_SERVER = "https://api-dev.secret11.com:9000";
+const LIVE_SERVER = "https://api.secret11.com:9000";
 
 const SERVER = LIVE_SERVER;
 
