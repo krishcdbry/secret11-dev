@@ -1,9 +1,16 @@
+const PROTOCOL = window.location.protocol;
 
-const LOCAL_SERVER = "http://api.secret11:9000";
-const DEV_SERVER = "http://api-dev.secret11.com:9000";
-const LIVE_SERVER = "http://api.secret11.com:9000";
+const LOCAL_SERVER = "api.secret11";
+const DEV_SERVER = "api-dev.secret11.com";
+const LIVE_SERVER = "api.secret11.com";
 
-const SERVER = LIVE_SERVER;
+let PORT = "9000";
+
+if (PROTOCOL == "https:") {
+    PORT = "7200";
+}
+
+const SERVER = PROTOCOL+"//"+LOCAL_SERVER+":"+PORT;
 
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";

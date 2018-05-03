@@ -5,12 +5,19 @@ let app = express();
 let mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 let bodyParser = require('body-parser');
+let fs = require('fs');
+let privateKey  = fs.readFileSync('../sslconf/secret11_com.key', 'utf8');
+let certificate = fs.readFileSync('../sslconf/secret11_com.crt', 'utf8');
+let credentials = {key: privateKey, cert: certificate};
+
 let http = require('http').Server(app);
+let https = require('https').Server(credentials, app);
 let io = require('socket.io')(http);
 let path = require('path');
 let connectMultipart = require('connect-multiparty');
 let multipartMiddleware = connectMultipart();
 let config = require('./config/secret');
+
 
 // Controllers
 let authController = require('./controllers/auth-controller');
@@ -116,5 +123,10 @@ app.get('/search/:key', firewall, searchController.search);
 http.listen('9000', function () {
 	console.log("Working dude !!");
 });
+
+https.listen('7200', function () {
+	console.log("Working dude !!");
+});
+
 
 module.exports = app;
