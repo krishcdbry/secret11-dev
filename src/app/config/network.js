@@ -7,14 +7,11 @@ const LIVE_SERVER = "api";
 
 let PORT = "9000";
 
-let SERVER_URL = PROTOCOL+"//"+LIVE_SERVER+"."+HOST+":"+PORT;
-
 if (PROTOCOL == "https:") {
     PORT = "7200";
-    SERVER_URL = PROTOCOL+"//secret11.com/api:"+PORT;
 }
 
-const SERVER = SERVER_URL;
+const SERVER = PROTOCOL+"//"+LIVE_SERVER+"."+HOST+":"+PORT;
 
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";
