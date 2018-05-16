@@ -6,8 +6,9 @@ let mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 let bodyParser = require('body-parser');
 let fs = require('fs');
-let privateKey  = fs.readFileSync('../sslconf/secret11_com.key', 'utf8');
-let certificate = fs.readFileSync('../sslconf/secret11_com.crt', 'utf8');
+let privateKey  = fs.readFileSync('../sslconf/api_secret11_com.key', 'utf8');
+let certificate = fs.readFileSync('../sslconf/api_secret11_com.crt', 'utf8');
+let bundle = fs.readFileSync('../sslconf/api_secret11_com.ca-bundle', 'utf8');
 let credentials = {key: privateKey, cert: certificate};
 
 let http = require('http').Server(app);

@@ -36,6 +36,7 @@
     "mocha": "^5.1.1",
     "mongoose": "^5.0.16",
     "morgan": "^1.9.0",
+    "network-speed": "^1.2.1",
     "node-random-name": "^1.0.1",
     "node-sass": "^4.7.2",
     "path": "^0.12.7",

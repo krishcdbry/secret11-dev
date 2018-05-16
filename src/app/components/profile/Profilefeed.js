@@ -49,7 +49,11 @@ class Profilefeed extends React.Component {
         let feedComponent = [
             <div key={key}>
                 <br/><br/><br/>
-                <i className="fa fa-spinner fa-pulse fa-3x fa-fw loading"></i>
+                <div className="spinner">
+                    <div className="bounce1"></div>
+                    <div className="bounce2"></div>
+                    <div className="bounce3"></div>
+                </div>
             </div>
         ];
 
