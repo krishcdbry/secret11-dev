@@ -18,7 +18,7 @@ module.exports.save = (tags, userId) => {
                 name : item,
                 timestamp,
                 active: true,
-                count : 0,
+                count : 1,
                 user: userId
             })
             return new Promise((resolve, reject) => {
@@ -142,20 +142,20 @@ module.exports.tagFeed = (req, res) => {
 }
 
 module.exports.getTags = (req, res) => {
-   // try {
+    try {
         Tag.find({}, {name:1, count:1}, (err, results) => {
-            // if (err) {
-            //     throw(err);
-            // }
+            if (err) {
+                throw(err);
+            }
             if (results) {
                 return res.status(200).send({
                     _embedded : results
                 })
             }
         }).sort({"count" : -1}).limit(10);
-   // }
-    // catch (err) {
-    //     console.error(err);
-    //     return res.status(500).json({success:false, message: "Something gone wrong"});
-    // }
+   }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
 }
