@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import Storyitem from './Storyitem';
-import { SERVER, STORY_FEED_API } from '../../config/network';
+import { SERVER, STORY_FEED_API, getTokenHeaders } from '../../config/network';
 import { createActionOnStoryFeedLoaded } from '../../actions/actions';
 import random from '../../helpers/random';
 
@@ -19,12 +19,9 @@ class Storyfeed extends React.Component {
 
     componentDidMount() {
         let {onStoryFeedLoaded} = this.props;
-        let _token = localStorage.getItem('x-access-token');
-        let authHeaders = new Headers();
-        authHeaders.append('x-access-token' , _token);
 
         fetch(SERVER+STORY_FEED_API, {
-            headers : authHeaders
+            headers : getTokenHeaders()
         })
         .then(res => res.json())
         .then(res => {

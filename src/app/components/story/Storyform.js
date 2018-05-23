@@ -164,6 +164,12 @@ class Storyform extends React.Component {
         })
     }
 
+    _removeImage() {
+        this.setState({
+            image : ''
+        })
+    }
+
     render() {
         let {tags, question, openSearch, image} = this.state;
         let divComponent = [];
@@ -226,9 +232,12 @@ class Storyform extends React.Component {
 
         if (image.length > 0) {
             imageComponent = (
-                <img src={this.state.image} style={{
-                    'max-height' : '200px' 
-                }}/>
+                <div class="image-item">
+                    <img src={this.state.image} style={{
+                        'max-height' : '200px' 
+                    }}/>
+                    <a href="javascript:;" class="close fa fa-remove" onClick={this._removeImage.bind(this)}></a>
+                </div>
             )
         }
 

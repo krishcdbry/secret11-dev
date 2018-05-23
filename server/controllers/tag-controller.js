@@ -18,6 +18,7 @@ module.exports.save = (tags, userId) => {
                 name : item,
                 timestamp,
                 active: true,
+                count : 0,
                 user: userId
             })
             return new Promise((resolve, reject) => {
@@ -32,7 +33,11 @@ module.exports.save = (tags, userId) => {
                         })
                     }
                     else {
-                        resolve(results[0])
+                        Tag.update({"name": item}, {
+                            count : Number(results[0].count)+1
+                        }, (err, res) => {
+                            resolve(results[0])
+                        })
                     }
                 })
             })
@@ -134,4 +139,23 @@ module.exports.tagFeed = (req, res) => {
     console.error(err);
     return res.status(500).json({success:false, message: "Something gone wrong"});
   }
+}
+
+module.exports.getTags = (req, res) => {
+   // try {
+        Tag.find({}, {name:1, count:1}, (err, results) => {
+            // if (err) {
+            //     throw(err);
+            // }
+            if (results) {
+                return res.status(200).send({
+                    _embedded : results
+                })
+            }
+        }).sort({"count" : -1}).limit(10);
+   // }
+    // catch (err) {
+    //     console.error(err);
+    //     return res.status(500).json({success:false, message: "Something gone wrong"});
+    // }
 }

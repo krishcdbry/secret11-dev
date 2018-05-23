@@ -5,6 +5,7 @@ var tagSchema = new Schema({
     name: String,
     user: String,
     active: Boolean,
+    count: String,
     timestamp: String
 });
 

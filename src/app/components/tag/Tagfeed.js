@@ -26,7 +26,6 @@ class Tagfeed extends React.Component {
     }
 
     _loadFeed(id) {
-       
         fetch(SERVER+TAG_FEED_API+id, {
             headers : getTokenHeaders()
         })

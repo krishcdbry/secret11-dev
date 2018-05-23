@@ -32,6 +32,7 @@ const STORY_DOWNVOTE_API = "/story/vote/";
 
 const TAG_INFO_API = "/tag/";
 const TAG_FEED_API = "/tag/feed/";
+const TAG_LIST_API = "/tag-list";
 
 const SEARCH_IMAGES_API = '/search/';
 
@@ -66,6 +67,7 @@ export {
 
     TAG_INFO_API,
     TAG_FEED_API,
+    TAG_LIST_API,
 
     SEARCH_IMAGES_API,
     

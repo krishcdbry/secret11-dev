@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import random from '../helpers/random';
 import Header from './common/Header';
-import { USER_LOGOUT_API, SERVER } from '../config/network';
+import { USER_LOGOUT_API, SERVER, TAG_LIST_API, getTokenHeaders } from '../config/network';
 import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
 import Storyfeed from './story/Storyfeed';
 import Storyform from './story/Storyform';
@@ -14,8 +15,21 @@ class Home extends React.Component {
         this.state = {
             formStyle : {},
             formOpen : false,
-            iconStyle : {}
+            iconStyle : {},
+            tags : []
         }
+    }
+
+    componentDidMount() {
+        fetch(SERVER+TAG_LIST_API, {
+            headers : getTokenHeaders()
+        })
+        .then(res => res.json())
+        .then(res => {
+            this.setState({
+                tags : res._embedded
+            })
+        })
     }
 
     _toggleStoryForm() {
@@ -56,6 +70,18 @@ class Home extends React.Component {
     
         let imgSrc = "/dist/assets/images/add.png";
 
+        let tagsComponent = [];
+
+        this.state.tags.map(item => {
+            let key = random();
+            let link = "/tag/"+item.name;
+            tagsComponent.push(
+                <Link to={link} key={key} className="tag">
+                    {item.name} <span className="count">{item.count}</span>
+                </Link>
+            )
+        })
+
         if (this.state.formOpen && !storyFormComponent) {
             storyFormComponent = (
                 <div>
@@ -69,6 +95,8 @@ class Home extends React.Component {
         }
         
         // onClick={this._toggleStoryForm.bind(this)} 
+
+
         
         return (
             <div className="home">
@@ -87,12 +115,7 @@ class Home extends React.Component {
                    <Storyfeed/>
                    <div className="right-menu">
                         <div className="story-tags suggestion">
-                                <span className="tag">Technology <span className="count">45</span> </span>
-                                <span className="tag">Sex <span className="count"> 23 </span></span>
-                                <span className="tag">Education <span className="count"> 12</span></span>
-                                <span className="tag">Funy <span className="count"> 11</span></span>
-                                <span className="tag">Fantasy <span className="count"> 134</span></span>
-                                <span className="tag">Viral <span className="count"> 6.5k</span></span>
+                                {tagsComponent}
                         </div>
                    </div>
                 </div>

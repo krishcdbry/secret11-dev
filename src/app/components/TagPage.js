@@ -1,9 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import random from '../helpers/random';
 import Header from './common/Header';
 import { 
     SERVER, 
     TAG_INFO_API,
+    TAG_LIST_API,
     getTokenHeaders
 } from '../config/network';
 import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
@@ -19,8 +21,21 @@ class TagPage extends React.Component {
         this.state = {
             tag: null,
             name : this.props.tag,
-            invalidTag: false
+            invalidTag: false,
+            tags : []
         }
+    }
+
+    _loadTagList() {
+        fetch(SERVER+TAG_LIST_API, {
+            headers : getTokenHeaders()
+        })
+        .then(res => res.json())
+        .then(res => {
+            this.setState({
+                tags : res._embedded
+            })
+        })
     }
 
     _loadData(tag) {
@@ -48,6 +63,7 @@ class TagPage extends React.Component {
 
     componentDidMount() {
         this._loadData(this.props.tag);
+        this._loadTagList();
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -73,6 +89,18 @@ class TagPage extends React.Component {
         let tagFeedComponent = null;
         let tagInfoContent = null;
         
+        let tagsComponent = [];
+
+        this.state.tags.map(item => {
+            let key = random();
+            let link = "/tag/"+item.name;
+            tagsComponent.push(
+                <Link to={link} key={key} className="tag">
+                    {item.name} <span className="count">{item.count}</span>
+                </Link>
+            )
+        })
+
         if (tag) {
             count =  tag.stories;
             tagFeedComponent = (
@@ -111,21 +139,7 @@ class TagPage extends React.Component {
                     </div>
                     <div className="right-menu">
                         <div className="story-tags suggestion">
-                                <Link to="Sex" className="tag">
-                                    <span>Technology <span className="count">45</span> </span>
-                                </Link>
-                                <Link to="Sex" className="tag">
-                                    <span>Sex <span className="count"> 23 </span></span>
-                                </Link>
-                                <Link to="Sex" className="tag">
-                                    <span>Education <span className="count"> 12</span></span>
-                                </Link>
-                                <Link to="Sex" className="tag">
-                                    <span>Funy <span className="count"> 11</span></span>
-                                </Link>
-                                <Link to="Sex" className="tag">
-                                    <span className="tag">Funy <span className="count"> 11</span></span>
-                                </Link>
+                                {tagsComponent}
                         </div>
                    </div>
                 </div>

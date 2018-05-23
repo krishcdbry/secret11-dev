@@ -6,13 +6,13 @@ let mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 let bodyParser = require('body-parser');
 let fs = require('fs');
-let privateKey  = fs.readFileSync('../sslconf/api_secret11_com.key', 'utf8');
-let certificate = fs.readFileSync('../sslconf/api_secret11_com.crt', 'utf8');
-let bundle = fs.readFileSync('../sslconf/api_secret11_com.ca-bundle', 'utf8');
-let credentials = {key: privateKey, cert: certificate};
+// let privateKey  = fs.readFileSync('../sslconf/api_secret11_com.key', 'utf8');
+// let certificate = fs.readFileSync('../sslconf/api_secret11_com.crt', 'utf8');
+// let bundle = fs.readFileSync('../sslconf/api_secret11_com.ca-bundle', 'utf8');
+// let credentials = {key: privateKey, cert: certificate};
 
 let http = require('http').Server(app);
-let https = require('https').Server(credentials, app);
+//let https = require('https').Server(credentials, app);
 let io = require('socket.io')(http);
 let path = require('path');
 let connectMultipart = require('connect-multiparty');
@@ -107,8 +107,8 @@ app.delete('/story/vote/:story', firewall, storyController.downVote);
 
 // Tag
 app.get('/tag/:name', firewall, tagController.tagData);
-app.get('/tag/feed/:tag', firewall, tagController.tagFeed)
-
+app.get('/tag/feed/:tag', firewall, tagController.tagFeed);
+app.get('/tag-list', firewall, tagController.getTags);
 
 // Search
 app.get('/search/:key', firewall, searchController.search);
@@ -125,9 +125,9 @@ http.listen('9000', function () {
 	console.log("Working dude !!");
 });
 
-https.listen('7200', function () {
-	console.log("Working dude !!");
-});
+// https.listen('7200', function () {
+// 	console.log("Working dude !!");
+// });
 
 
 module.exports = app;
