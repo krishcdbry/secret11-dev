@@ -1,8 +1,8 @@
-let Tag = require('../models/tag');
-let Storytag = require('../models/storytag');
-let TagController = require('../controllers/tag-controller');
+const Tag = require('../models/tag');
+const Storytag = require('../models/storytag');
+const TagController = require('../controllers/tag-controller');
 
-module.exports.save = (tags, story) => {
+let _save = (tags, story) => {
     let timestamp = (new Date()).toUTCString();
     if (tags.length > 0) {
             let tagPromises = tags.map(item => {
@@ -36,7 +36,7 @@ module.exports.save = (tags, story) => {
     }
 }
 
-module.exports.getTagByStory = (story) => {
+let _getTagByStory = (story) => {
     return new Promise((resolve, reject) => { 
         Storytag.find({"story" : story}, (err, results) => {
             if (!err || results.length > 0) {
@@ -45,7 +45,8 @@ module.exports.getTagByStory = (story) => {
                         TagController.getTagById(item.tag).then(tagRes => {
                             let tagObj = {    
                                 name :tagRes.name,
-                                id : tagRes._id
+                                id : tagRes._id,
+                                count : tagRes.count
                             }
                             res(tagObj);
                         });     
@@ -66,3 +67,6 @@ module.exports.getTagByStory = (story) => {
     
 }
 
+
+module.exports.save = _save;
+module.exports.getTagByStory = _getTagByStory;

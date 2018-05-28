@@ -4,7 +4,9 @@ import Header from './common/Header';
 import { 
     USER_PROFILE_API, 
     SERVER,
-    getTokenHeaders
+    getTokenHeaders,
+    USER_FOLLOW_API,
+    USER_UNFOLLOW_API
 } from '../config/network';
 import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
 import Storyfeed from './story/Storyfeed';
@@ -53,6 +55,45 @@ class ProfilePage extends React.Component {
         })
     }
 
+    _followUser() {
+        let {user} = this.props;
+        let {id, username} = this.state.profile;
+        let userBody = {
+            user : id
+        }
+        fetch(SERVER+USER_FOLLOW_API, {
+            headers: getTokenHeaders(),
+            method : "POST",
+            body : JSON.stringify(userBody)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                this._loadUser(username);
+            }
+        }, err => {
+           // Error
+        })
+    }
+
+    _unfollowUser() {
+        let {user} = this.props;
+        let {id, username} = this.state.profile;
+  
+        fetch(SERVER+USER_UNFOLLOW_API+id, {
+            headers: getTokenHeaders(),
+            method : "DELETE",
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                this._loadUser(username);
+            }
+        }, err => {
+           // Error
+        })
+    }
+
     static getDerivedStateFromProps(nextProps, prevState) {
         if(nextProps.userHandle != prevState.user.username) {
             return {
@@ -78,6 +119,7 @@ class ProfilePage extends React.Component {
         let homeContent = null;
         let profileFeedComponent = null;
         let profileEditContent = null;
+        let profileOptionsComponent = null;
 
         if (profile) {
             profileFeedComponent = (
@@ -90,6 +132,22 @@ class ProfilePage extends React.Component {
                             <Link to="/profile/edit" className="app-button inverse">Edit</Link>
                     </div>
                 )
+            }
+            else {
+                if (!profile.follower.following) {
+                    profileOptionsComponent = (
+                        <div className="follow-options">
+                            <a href="javascript:;" class="app-button" onClick={this._followUser.bind(this)}>Follow</a>
+                        </div>
+                    )
+                }
+                else {
+                    profileOptionsComponent = (
+                        <div className="follow-options">
+                            <a href="javascript:;" class="app-button inverse" onClick={this._unfollowUser.bind(this)}>Following</a>
+                        </div>
+                    )
+                }
             }
         }
 
@@ -110,16 +168,16 @@ class ProfilePage extends React.Component {
                                     <span className="count">{profile.stats.story}</span>
                                     <span className="title">Stories</span>
                                 </div>
-                                <div className="stats-item question">
-                                    <span className="count">{profile.stats.question}</span>
-                                    <span className="title">Question</span>
-                                </div>
                                 <div className="stats-item reply">
                                     <span className="count">{profile.stats.reply}</span>
-                                    <span className="title">Reply</span>
+                                    <span className="title">Replies</span>
                                 </div>
-                               
+                                <div className="stats-item follower">
+                                    <span className="count">{profile.follower.count}</span>
+                                    <span className="title">Followers</span>
+                                </div>
                             </div>
+                            {profileOptionsComponent}
                         </div>
                         <div className="">
                            {profileFeedComponent}

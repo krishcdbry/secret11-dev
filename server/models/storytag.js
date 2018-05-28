@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var storyTagSchema = new Schema({
-	story: String,
-    tag: String
+	story: Schema.ObjectId,
+    tag: Schema.ObjectId
 });
 
 module.exports = mongoose.model('storytag', storyTagSchema);    

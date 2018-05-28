@@ -1,21 +1,20 @@
-let crypto = require('crypto');
-let bcrypt = require('bcryptjs');
-let jwt = require('jsonwebtoken');
-let config = require('../config/secret');
-let profile = require('./profile-controller');
-let smart = require('../helpers/smart');
-let security = require("../helpers/security");
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../config/secret');
+const profile = require('./profile-controller');
+const smart = require('../helpers/smart');
+const security = require("../helpers/security");
+const User = require('../models/users');
 
-let encryptPassword = (password, salt) => {
+const encryptPassword = (password, salt) => {
     let hash = crypto.createHmac('sha512', salt); /** Hashing algorithm sha512 */
     hash.update(password);
  	hash.digest('hex');
     return hash.digest('hex');
 };
 
-let User = require('../models/users');
-
-module.exports.signup = (req, res) => {
+let _signup = (req, res) => {
 	try {
 		let {username, password, gender} = req.body;
 		let hashedPassword = bcrypt.hashSync(password, 8);
@@ -65,7 +64,7 @@ module.exports.signup = (req, res) => {
 	}
 };
 
-module.exports.login = (req, res) => {
+let _login = (req, res) => {
 	try {
 		let {username, password} = req.body;
 		User.find({
@@ -102,6 +101,10 @@ module.exports.login = (req, res) => {
 	}	
 };
 
-module.exports.logout = (req, res) => {
+let _logout = (req, res) => {
 	return res.status(200).send({ success: true, message: "successfully loggedout", token: null });
 }
+
+module.exports.signup = _signup;
+module.exports.login = _login;
+module.exports.logout = _logout;

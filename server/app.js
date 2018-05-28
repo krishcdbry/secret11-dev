@@ -22,6 +22,7 @@ let config = require('./config/secret');
 
 // Controllers
 let authController = require('./controllers/auth-controller');
+let userController = require('./controllers/user-controller');
 let profileController = require('./controllers/profile-controller');
 let storyController = require('./controllers/story-controller');
 let tagController = require('./controllers/tag-controller');
@@ -93,6 +94,10 @@ app.get('/user', firewall, profileController.me);
 app.get('/user/:user', firewall, profileController.getUserProfile);
 app.put('/user', firewall, profileController.updateUser);
 
+// User Follower
+app.post('/user/follow', firewall, userController.followUser);
+app.delete('/user/follow/:user', firewall, userController.unfollowUser);
+
 // Story
 app.get('/story/feed', firewall, storyController.feed);
 app.post('/story/publish', firewall, storyController.publish);
@@ -105,13 +110,21 @@ app.get('/story/userfeed/:user', firewall, storyController.feedByUser);
 app.post('/story/vote', firewall, storyController.upVote);
 app.delete('/story/vote/:story', firewall, storyController.downVote);
 
+app.post('/story/item', firewall, storyController.storyItem);
+
 // Tag
 app.get('/tag/:name', firewall, tagController.tagData);
 app.get('/tag/feed/:tag', firewall, tagController.tagFeed);
 app.get('/tag-list', firewall, tagController.getTags);
 
+// TagFollow
+app.post('/tag/follow', firewall, tagController.followTag);
+app.delete('/tag/follow/:tag', firewall, tagController.unfollowTag);
+
 // Search
-app.get('/search/:key', firewall, searchController.search);
+app.get('/search/global/:key', firewall, searchController.searchGlobal);
+app.get('/search/pic/:key', firewall, searchController.searchPic);
+
 
 // app.post('/api/user/profile-photo', multipartMiddleware, profileController.uploadPhoto);
 

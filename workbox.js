@@ -56,9 +56,9 @@ self.addEventListener('install', (event) => {
                 '/index.html',
                 '/dist/assets/js/landing.js',
                 '/dist/assets/css/landing.css', 
-                'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
                 '/dist/assets/images/*',
-                '/bucket/profile/*'
+                '/bucket/profile/*',
+                '/vendor/**/*'
             ]);
         })
     )

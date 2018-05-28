@@ -21,11 +21,15 @@ const USER_SIGNUP_API = "/auth/signup";
 const USER_LOGIN_API = "/auth/login";
 const USER_LOGOUT_API = "/auth/logout";
 
+const USER_FOLLOW_API = "/user/follow";
+const USER_UNFOLLOW_API = "/user/follow/";
+
 const STORY_PUBLISH_API = "/story/publish";
 const STORY_FEED_API = "/story/feed";
 const STORY_REPLY_GET_API = "/story/reply/";
 const STORY_REPLY_PUBLISH_API = "/story/reply";
 const STORY_PROFILEFEED_API = "/story/userfeed/";
+const STORY_ITEM_API = "/story/item";
 
 const STORY_UPVOTE_API = "/story/vote";
 const STORY_DOWNVOTE_API = "/story/vote/";
@@ -34,7 +38,11 @@ const TAG_INFO_API = "/tag/";
 const TAG_FEED_API = "/tag/feed/";
 const TAG_LIST_API = "/tag-list";
 
-const SEARCH_IMAGES_API = '/search/';
+const TAG_FOLLOW_API = "/tag/follow";
+const TAG_UNFOLLOW_API = "/tag/follow/";
+
+const SEARCH_IMAGES_API = '/search/pic/';
+const SEARCH_GLOBAL_API = '/search/global/';
 
 const getTokenHeaders = () => {
     let _token = localStorage.getItem('x-access-token');
@@ -52,6 +60,9 @@ export {
     USER_PROFILE_API,
     USER_PROFILE_EDIT_API,
 
+    USER_FOLLOW_API,
+    USER_UNFOLLOW_API,
+
     USER_SIGNUP_API,
     USER_LOGIN_API,
     USER_LOGOUT_API,
@@ -61,6 +72,7 @@ export {
     STORY_REPLY_GET_API,
     STORY_REPLY_PUBLISH_API,
     STORY_PROFILEFEED_API,
+    STORY_ITEM_API,
 
     STORY_UPVOTE_API,
     STORY_DOWNVOTE_API,
@@ -69,7 +81,11 @@ export {
     TAG_FEED_API,
     TAG_LIST_API,
 
+    TAG_FOLLOW_API,
+    TAG_UNFOLLOW_API,
+
     SEARCH_IMAGES_API,
+    SEARCH_GLOBAL_API,
     
     getTokenHeaders
 }

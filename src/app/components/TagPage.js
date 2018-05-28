@@ -6,7 +6,9 @@ import {
     SERVER, 
     TAG_INFO_API,
     TAG_LIST_API,
-    getTokenHeaders
+    getTokenHeaders,
+    TAG_FOLLOW_API,
+    TAG_UNFOLLOW_API
 } from '../config/network';
 import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
 import Storyfeed from './story/Storyfeed';
@@ -61,6 +63,47 @@ class TagPage extends React.Component {
             })
     }
 
+    _followTag() {
+        let {id, name} = this.state.tag;
+        let storyTag = {
+            tag : id
+        }
+        fetch(SERVER+TAG_FOLLOW_API, {
+            method: 'POST',
+            headers: getTokenHeaders(),
+            body: JSON.stringify(storyTag)
+        })
+        .then(res => {
+            return res.json();
+        })
+        .then(res => {
+            if (res.success) {
+                this._loadData(name);
+            }
+        }, err => {
+            // Error
+        })
+    }
+
+    _unfollowTag() {
+        let {tag} = this.state;
+        let {id, name} = tag;
+        fetch(SERVER+TAG_UNFOLLOW_API+id, {
+            method: 'DELETE',
+            headers: getTokenHeaders(),
+        })
+        .then(res => {
+            return res.json();
+        })
+        .then(res => {
+            if (res.success) {
+                this._loadData(name);
+            }
+        }, err => {
+            // Error
+        })
+    }
+
     componentDidMount() {
         this._loadData(this.props.tag);
         this._loadTagList();
@@ -88,6 +131,7 @@ class TagPage extends React.Component {
         let count = 0;
         let tagFeedComponent = null;
         let tagInfoContent = null;
+        let tagOptionsComponent = null;
         
         let tagsComponent = [];
 
@@ -111,10 +155,25 @@ class TagPage extends React.Component {
                 <div>
                      <h1>{this.props.tag}</h1>
                      <span className="count">
-                         {count} Items
+                         {count} Stories | {tag.follower.count} Followers
                     </span>
                 </div>
-         )
+            )
+
+            if (!tag.follower.following) {
+                tagOptionsComponent = (
+                    <div className="tag-options">
+                        <a href="javascript:;" class="app-button" onClick={this._followTag.bind(this)}>Follow</a>
+                    </div>
+                )
+            }
+            else {
+                tagOptionsComponent = (
+                    <div className="tag-options">
+                        <a href="javascript:;" class="app-button inverse" onClick={this._unfollowTag.bind(this)}>Following</a>
+                    </div>
+                )
+            }
         }
 
         if (invalidTag) {
@@ -132,6 +191,7 @@ class TagPage extends React.Component {
                     <div className="tag-block">
                         <div className="tag-info">
                             {tagInfoContent}
+                            {tagOptionsComponent}
                         </div>
                         <div className="">
                            {tagFeedComponent}

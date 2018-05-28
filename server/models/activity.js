@@ -2,13 +2,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var answerSchema = new Schema({
-	user: String,
+	user: Schema.ObjectId,
     type: {
         type: String,
         enum : ['new', 'reply', 'vote']
     },
-    story : String,
-    reply : String,
+    story : Schema.ObjectId,
+    reply : Schema.ObjectId,
 	timestamp: String
 });
 

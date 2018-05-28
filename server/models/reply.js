@@ -3,8 +3,8 @@ var Schema = mongoose.Schema;
 
 var replySchema = new Schema({
 	reply: String,
-	story: String,
-	user: String,
+	story: Schema.ObjectId,
+	user: Schema.ObjectId,
 	timestamp: String
 });
 

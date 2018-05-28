@@ -17,7 +17,12 @@ render(
 
                     <Switch>
 
-                        <Route path="/story/:id" render={(props) => { 
+                        <Route path="/compose/:id" render={(props) => { 
+                            fillProgress();
+                            return <App route="compose" {...props} /> 
+                        }}/> 
+
+                         <Route path="/story/:id" render={(props) => { 
                             fillProgress();
                             return <App route="story" {...props} /> 
                         }}/> 

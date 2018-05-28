@@ -5,9 +5,10 @@ var storySchema = new Schema({
 	content: String,
 	title: String,
 	type: String,
-	author: String,
+	author: Schema.ObjectId,
 	active: Boolean,
 	image: String,
+	url : String,
 	timestamp: String
 });
 

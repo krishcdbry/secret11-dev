@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var voteSchema = new Schema({
-	story: String,
-    user: String,
+	story: Schema.ObjectId,
+    user: Schema.ObjectId,
 	timestamp: String
 });
 

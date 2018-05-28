@@ -22,13 +22,18 @@ class Storyitem extends React.Component {
             reply: "",
             replyData : [],
             voting: false,
-            fullStory: false
+            fullStory: (this.props.full) ? true : false,
+            expandImage : false
         }
     }
     
     _openInput () {
         if (this.state.story.type == 'Q') {
-            this._loadAnswers();
+            //this._loadAnswers();
+            this._loadReplies();
+        }
+        else {
+            this._loadReplies();
         }
         let open = !this.state.openInput;
         this.setState({
@@ -109,7 +114,6 @@ class Storyitem extends React.Component {
         let {upvote} = story;
        // let {voted} = this.props;
        if (voting) {
-           console.log("Modda gudu");
            return;
        }
        
@@ -155,8 +159,15 @@ class Storyitem extends React.Component {
         })
     }
 
+    _expandToggleImage(e) {
+        let expand = this.state.expandImage;
+        this.setState({
+            expandImage : !expand
+        })
+    }
+
     render() {
-        let {story, fullStory} = this.state;
+        let {story, fullStory, expandImage} = this.state;
         let storyClass = "story-item";
         let questionIndicator = null;
         let storyTagsContent = [];
@@ -168,11 +179,22 @@ class Storyitem extends React.Component {
         let upvoteCountContent = null;
         let storyImageComponent = null;
         let displayStoryComponent = null;
+        let expandImageComponent = null;
         let storyValue = story.content.trim();
+        let expandClass = "";
+        let url = "";
         let imageStyle = {
             'max-height': '200px',
             'float' : 'right',
             'max-width' : '95%'
+        }
+
+        if (expandImage) {
+            expandClass = "expand-image";
+        }
+
+        if (story.url) {
+            url = "/story/"+story.url;
         }
 
         if (storyValue.length > 350 && !fullStory) {
@@ -194,12 +216,17 @@ class Storyitem extends React.Component {
 
         if (story.image) {
             if (story.image.length > 0) {
-                storyImageComponent = <img src={story.image} style={imageStyle}/>
+                storyImageComponent = (
+                 <div className="image-component">
+                    <img src={story.image} style={imageStyle} className={expandClass} onClick={this._expandToggleImage.bind(this)}/>
+                    {/* <a href="javascipt:;" className="fa fa-close close-image" onClick={this._expandToggleImage.bind(this)}></a> */}
+                </div>
+                )
             }
         }
 
         let optionContent = (
-            <a href="#" className="reply" onClick={this._openInput.bind(this)}>Reply 
+            <a href="javascript:;" className="reply" onClick={this._openInput.bind(this)}>Reply 
                 <span className="count">{story.reply.count} </span>
             </a>
         )
@@ -210,7 +237,19 @@ class Storyitem extends React.Component {
                 <div className="question-indicator">Q</div>
             )
             optionContent = (
-                <a href="#" className="reply" onClick={this._openInput.bind(this)}>Answer <span className="count">{story.answer.count} </span></a>
+                <a href="javascript:;" className="reply" onClick={this._openInput.bind(this)}>Answer 
+                    <span className="count">{story.answer.count} </span>
+                </a>
+            )
+
+            let url = "/story/"+story.url;
+
+            displayStoryComponent = (
+                <Link to={url}>
+                     <span>
+                        {storyValue}
+                    </span>
+                </Link>
             )
         }
 
@@ -219,7 +258,7 @@ class Storyitem extends React.Component {
                 let key = random();
                 let link = "/tag/"+item.name;
                 storyTagsContent.push(
-                    <Link to={link} key={key} className="tag"><span>{item.name}</span></Link>
+                    <Link to={link} key={key} className="tag"><span>{item.name}<span className="count">{item.count}</span></span></Link>
                 )
             });
         }
@@ -264,9 +303,13 @@ class Storyitem extends React.Component {
 
         if (story.title) {
             if (story.title.length > 0) {
-                storyTitleContent = (<div className="story-title">
-                    {story.title.trim()}
-                </div>)
+                storyTitleContent = (
+                    <Link to={url}>
+                        <div className="story-title">
+                            {story.title.trim()}
+                        </div>
+                    </Link>
+                )
             }
         }
 

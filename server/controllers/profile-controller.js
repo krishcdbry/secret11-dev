@@ -1,29 +1,39 @@
-let User = require('../models/users');
-let Story = require('../models/story');
-let Reply = require('../models/reply');
-let Smart = require('../helpers/smart');
+const User = require('../models/users');
+const Story = require('../models/story');
+const Reply = require('../models/reply');
+const Follower = require('../models/follower');
+
+const Smart = require('../helpers/smart');
+
+
+const UserController = require('./user-controller');
 let response = null;
 
-let returnErrorResonse = (message, errCode=403) => {
+// Helpers
+const returnErrorResonse = (message, errCode=403) => {
     return response.status(errCode).send({ 
         success: false, 
         message: message
     });
 }
 
-let getUserReplyCount = (user) => {
+const getUserReplyCount = (user) => {
     return Reply.find({"user":user}, (err, res) => {}).count()
 }
 
-let getUserStoryCount = (user) => {
+const getUserStoryCount = (user) => {
     return Story.find({"author":user, "type": "S"}, (err, res) => {}).count()
 }
 
-let getUserQuestionCount = (user) => {
+const getUserQuestionCount = (user) => {
     return Story.find({"author":user, "type": "Q"}, (err, res) => {}).count()
 }
 
-let getUserByName = (name) => {
+const getUserFollowerCount = (user) => {
+    return Follower.find({"user":user}, (err, res) => {}).count()
+}
+
+const getUserByName = (name) => {
 	if (!name) {
         return null;
     }
@@ -36,7 +46,10 @@ let getUserByName = (name) => {
     });
 }
 
-module.exports.getUserData = (user) => {
+
+// Exports
+
+let _getUserData = (user) => {
     let replyCount = getUserReplyCount(user);
     let storyCount = getUserStoryCount(user);
     let userData = this.getUser(user);
@@ -61,7 +74,7 @@ module.exports.getUserData = (user) => {
     })
 }
 
-module.exports.getUserFull = (id) => {
+let _getUserFull = (id) => {
 	if (!id) {
         return null;
     }
@@ -74,7 +87,7 @@ module.exports.getUserFull = (id) => {
     });
 }
 
-module.exports.getUser = (id) => {
+let _getUser = (id) => {
 	if (!id) {
         return null;
     }
@@ -85,12 +98,12 @@ module.exports.getUser = (id) => {
     
 }
 
-module.exports.me = (req, res, next) => {
+let _me = (req, res, next) => {
     try {    
         response = res;
-        if (req.userId) {
-            console.log(req.userId);
-            User.findById(req.userId, (err, user) => {
+        let {userId} = req;
+        if (userId) {
+            User.findById(userId, (err, user) => {
                 console.log(err, user);
                 if (err || !user) {
                     return returnErrorResonse('Authentication failed');
@@ -109,7 +122,7 @@ module.exports.me = (req, res, next) => {
     }
 }
 
-module.exports.getUserProfile = (req, res) => {
+let _getUserProfile = (req, res) => {
     try {
         response = res;
         if (req.params.user && req.userId) {
@@ -118,7 +131,7 @@ module.exports.getUserProfile = (req, res) => {
             User.find({"username": name}, (err, user) => {
                 
                 if (err || !user || user.length == 0) {
-                    throw("Invalud user")
+                    return res.status(404).json({success:false, message: "User not found"});
                 }
 
                 let userId = user[0]._id;
@@ -127,7 +140,9 @@ module.exports.getUserProfile = (req, res) => {
                     
                     getUserStoryCount(userId),
                     getUserReplyCount(userId),
-                    getUserQuestionCount(userId)
+                    getUserQuestionCount(userId),
+                    getUserFollowerCount(userId),
+                    UserController.isFollowing(userId, req.userId)
 
                 ]).then(stats => {
 
@@ -137,6 +152,11 @@ module.exports.getUserProfile = (req, res) => {
                         story : stats[0],
                         question: stats[2],
                         reply : stats[1]
+                    }
+
+                    userObj.follower = {
+                        following : stats[4],
+                        count : stats[3]
                     }
                     
                     return res.status(200).send({
@@ -157,7 +177,7 @@ module.exports.getUserProfile = (req, res) => {
     }
 }
 
-module.exports.updateUser = (req, res) => {
+let _updateUser = (req, res) => {
  try {   
         response = res;
         let user = req.userId;
@@ -196,3 +216,11 @@ module.exports.updateUser = (req, res) => {
         return res.status(500).json({success:false, message: "Something gone wrong"});
     }
 }
+
+
+module.exports.getUserData = _getUserData;
+module.exports.getUserFull = _getUserFull;
+module.exports.getUser = _getUser;
+module.exports.me = _me;
+module.exports.getUserProfile = _getUserProfile;
+module.exports.updateUser = _updateUser;

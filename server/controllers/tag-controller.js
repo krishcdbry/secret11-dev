@@ -1,16 +1,20 @@
-let Tag = require('../models/tag');
-let Storytag = require('../models/storytag');
-let Story = require('../controllers/story-controller');
+const Tag = require('../models/tag');
+const TagFollower = require('../models/tagfollower');
+const Storytag = require('../models/storytag');
+const Story = require('../controllers/story-controller');
+
 let response = null;
 
-let returnErrorResonse = (message, errCode=403) => {
+// Helpers
+const returnErrorResonse = (message, errCode=403) => {
     return response.status(errCode).send({ 
         success: false, 
         message: message
     });
 }
 
-module.exports.save = (tags, userId) => {
+// Exports 
+let _save = (tags, userId) => {
     let timestamp = (new Date()).toUTCString();
     if (tags.length > 0) {
         let tagPromises = tags.map(item => {
@@ -51,7 +55,7 @@ module.exports.save = (tags, userId) => {
     }
 }
 
-module.exports.getTagById = (id) => {
+let _getTagById = (id) => {
     return Tag.findById(id, (err, results) => {
         if (!err && results && results.length > 0) {
              return results;
@@ -62,13 +66,22 @@ module.exports.getTagById = (id) => {
     }); 
 }
 
-module.exports.getStoriesByTag = (id) => {
+let _getStoriesByTag = (id) => {
     return Storytag.find({"tag" : id}, (err, results) => {}).count()
 }
 
-module.exports.tagData = (req, res) => {
+let _isFollowing = (tag, follower) => {
+    return TagFollower.find({"tag" : tag, "follower" : follower}, (err, results) => {}).count()
+}
+
+let _tagFollowerCount = (tag) => {
+    return TagFollower.find({"tag" : tag}, (err, results) => {}).count()
+}
+
+let _tagData = (req, res) => {
     try {
         response = res;
+        let {userId} = req;
         let {name} = req.params;
         
         if (!name) {
@@ -82,34 +95,45 @@ module.exports.tagData = (req, res) => {
             if (!err && results) {
                 let {name, _id} = results;
             
-                this.getStoriesByTag(_id).then(storyCount => {
-                
+                let storyCount = _getStoriesByTag(_id);
+                let followerCount = _tagFollowerCount(_id);
+                let checkFollower = _isFollowing(_id, userId);
+
+                Promise.all([
+                    storyCount,
+                    followerCount,
+                    checkFollower
+                ]).then(values => {
+
                     let tagData = {
                         name : name,
                         id : _id,
-                        stories: storyCount
+                        stories: values[0],
+                        follower : {
+                            count : values[1],
+                            following : values[2]
+                        }
                     }
                 
                     return res.status(200).send({
                         success: true,
                         tag : tagData
                     })
-
                 }, err => {
                     throw(err);
                 })
             }   
             else {
-                throw("bad request - 73 Line");
-            }     
+                return res.status(404).json({success:false, message: "Tag not found"});
+            }    
         })
     } catch (err) {
-        console.error(err);
+        //console.error(err);
         return res.status(500).json({success:false, message: "Something gone wrong"});
     }    
 }
 
-module.exports.tagFeed = (req, res) => {
+let _tagFeed = (req, res) => {
   try {  
         let {tag} = req.params;
         if (tag) {
@@ -141,9 +165,18 @@ module.exports.tagFeed = (req, res) => {
   }
 }
 
-module.exports.getTags = (req, res) => {
+let _getTags = (req, res) => {
     try {
-        Tag.find({}, {name:1, count:1}, (err, results) => {
+        Storytag.aggregate(
+            [
+                { $group: { _id: "$tag" , count: { $sum: 1 } } }, 
+                { $lookup: { from: "tags", localField: "_id", foreignField: "_id", as: "tagdata" }},
+                { $unwind : "$tagdata" },
+                { $project: { "_id": 1, "count":1, "name": "$tagdata.name" } },
+                { $limit: 10 },
+                { $sort : {"count" : -1}}
+            ]
+        , (err, results) => {
             if (err) {
                 throw(err);
             }
@@ -152,10 +185,90 @@ module.exports.getTags = (req, res) => {
                     _embedded : results
                 })
             }
-        }).sort({"count" : -1}).limit(10);
+        })
    }
     catch (err) {
         console.error(err);
         return res.status(500).json({success:false, message: "Something gone wrong"});
     }
 }
+
+let _followTag = (req, res) => {
+    try {
+        let {tag} = req.body;
+        let {userId} = req;
+
+        let timestamp = (new Date()).toUTCString();
+
+        let TagFollowerObject = new TagFollower({
+            tag,
+            follower : userId,
+            timestamp
+        });
+
+        _isFollowing(tag, userId).then(count => {
+            if (count == 0) {
+                TagFollowerObject.save((err, results) => {
+                    return res.status(200).json({
+                        success: true,
+                        message : "Following"
+                    })
+                })
+            }
+            else {
+                return res.status(403).json({
+                    success: false,
+                    message : "Already following"
+                })
+            }
+        })
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
+}
+
+let _unfollowTag = (req, res) => {
+    try {
+        let {tag} = req.params;
+        let {userId} = req;
+
+        _isFollowing(tag, userId).then(count => {
+            if (count > 0) {
+                TagFollower.remove({"tag" : tag, "follower" : userId}, (err, results) => {
+                    return res.status(200).json({
+                        success: true,
+                        message : "Unfollowed"
+                    })
+                })
+            }
+            else {
+                return res.status(403).json({
+                    success: false,
+                    message : "Invalid request"
+                })
+            }
+        })
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Something gone wrong"});
+    }
+}
+
+let _getTagFollowers = () => {
+
+}
+
+module.exports.save = _save;
+module.exports.getTagById = _getTagById;
+module.exports.getStoriesByTag = _getStoriesByTag;
+module.exports.isFollowing = _isFollowing;
+module.exports.getFollowerCount = _tagFollowerCount;
+module.exports.tagData = _tagData;
+module.exports.tagFeed = _tagFeed;
+module.exports.getTags = _getTags;
+module.exports.followTag = _followTag;
+module.exports.unfollowTag = _unfollowTag;
+module.exports.getTagFollowers = _getTagFollowers;

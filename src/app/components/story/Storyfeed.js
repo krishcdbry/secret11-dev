@@ -48,7 +48,7 @@ class Storyfeed extends React.Component {
             storyfeed.forEach(item => {
                 let key = random();
                 feedComponent.push(
-                    <Storyitem story={item} voted={this._voted.bind(this)} key={key}/>
+                    <Storyitem story={item} key={key}/>
                 )
             })
         }

@@ -103,7 +103,7 @@ class Home extends React.Component {
                 <Header/>
                 <div className="home-content home-page">
                     <div className="left-menu">
-                        <Link to="/story/new">
+                        <Link to="/compose/new">
                             <div className="create" style={this.state.iconStyle}>
                                 <img src={imgSrc}/>
                             </div>

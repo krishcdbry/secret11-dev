@@ -1,50 +1,52 @@
-let User = require('../models/users');
-let Smart = require('../helpers/smart');
-let Story = require('../models/story');
-let Answer = require('../models/answer');
-let Tag = require('../models/tag');
-let Vote = require('../models/vote');
-let Reply = require('../models/reply');
-let Activity = require('../models/activity');
+const User = require('../models/users');
+const Smart = require('../helpers/smart');
+const Story = require('../models/story');
+const Answer = require('../models/answer');
+const Tag = require('../models/tag');
+const Vote = require('../models/vote');
+const Reply = require('../models/reply');
+const Activity = require('../models/activity');
 
-let Storytag = require('../models/storytag');
-let ProfileController = require('./profile-controller');
-let TagController = require('./tag-controller');
-let StoryTagController = require('./story-tag-controller');
+const Storytag = require('../models/storytag');
+const ProfileController = require('./profile-controller');
+const TagController = require('./tag-controller');
+const StoryTagController = require('./story-tag-controller');
+
 let response = null;
 let currentUserID = null;
 
-let returnErrorResonse = (message, errCode=403) => {
+// Helpers
+const returnErrorResonse = (message, errCode=403) => {
     return response.status(errCode).send({ 
         success: false, 
         message: message
     });
 }
 
-let returnSuccessResonse = (story) => {
+const returnSuccessResonse = (story) => {
     return response.status(200).send({
         success: true,
         story
     });
 }
 
-let getStoryReplyCount = (story) => {
+const getStoryReplyCount = (story) => {
     return Reply.find({"story":story}, (err, res) => {}).count()
 }
 
-let getStoryAnswerCount = (story) => {
+const getStoryAnswerCount = (story) => {
     return Answer.find({"story":story}, (err, res) => {}).count()
 }
 
-let getStoryVoteCount = (story) => {
+const getStoryVoteCount = (story) => {
     return Vote.find({"story":story}, (err, res) => {}).count()
 }
 
-let isUserVoted = (story, user) => {
+const isUserVoted = (story, user) => {
     return Vote.find({"story":story, "user": user}, (err, res) => {}).count()
 }
 
-let returnStory = (storyInserted) => {
+const returnStory = (storyInserted) => {
     return this.getStoryData(storyInserted).then(story => {
         return returnSuccessResonse(story);
     }, err => {
@@ -52,8 +54,8 @@ let returnStory = (storyInserted) => {
     })
 }
 
-let newStoryActivity = (story, userId) => {
-    let timestamp = (new Date()).toUTCString();;
+const newStoryActivity = (story, userId) => {
+    let timestamp = (new Date()).toUTCString();
     let activity = new Activity({
         type: 'new',
         story,
@@ -63,7 +65,7 @@ let newStoryActivity = (story, userId) => {
     return activity.save((err, res) => {})
 }
 
-let newReplyActivity = (story, reply, userId) => {
+const newReplyActivity = (story, reply, userId) => {
     let timestamp = (new Date()).toUTCString();;
     let activity = new Activity({
         type: 'reply',
@@ -75,7 +77,7 @@ let newReplyActivity = (story, reply, userId) => {
     return activity.save((err, res) => {})
 }
 
-let newVoteActivity = (story, userId) => {
+const newVoteActivity = (story, userId) => {
     let timestamp = (new Date()).toUTCString();;
     let activity = new Activity({
         type: 'vote',
@@ -86,7 +88,7 @@ let newVoteActivity = (story, userId) => {
     return activity.save((err, res) => {})
 }
 
-let saveStory = (story, tags, userId) => {
+const saveStory = (story, tags, userId) => {
     story.save((err, storyInserted) => {
         if (err) {
             return returnErrorResonse("Unable to publish", 400);
@@ -95,7 +97,7 @@ let saveStory = (story, tags, userId) => {
         // Save activity
         newStoryActivity(storyInserted._id, userId);
 
-        if (tags.length > 0) {
+        if (tags && tags.length > 0) {
             tags = tags.split(",");
             TagController.save(tags, userId).then(tagsData => {
                 StoryTagController
@@ -116,7 +118,10 @@ let saveStory = (story, tags, userId) => {
     });
 }
 
-module.exports.getStoryById = (id) => {
+
+// Export functions 
+
+let _getStoryById = (id) => {
     return new Promise((resolve, reject)=> {
              Story.findById(id, (err, results) => {
                  if (err || !results) {
@@ -129,13 +134,11 @@ module.exports.getStoryById = (id) => {
                  })
              })
     });
- }
- 
+}
 
+let _getStoryData = (story) => {
 
- module.exports.getStoryData = (story) => {
-
-    let {content, _id, type, timestamp, image, author, title} = story;
+    let {content, _id, type, timestamp, image, author, title, url} = story;
 
     let dateTimeString = Smart.formatDate(timestamp);
 
@@ -145,7 +148,8 @@ module.exports.getStoryById = (id) => {
         type,
         timestamp : dateTimeString,
         id : _id,
-        image
+        image,
+        url
     }
 
     let userData = ProfileController.getUser(author);
@@ -203,7 +207,7 @@ module.exports.getStoryById = (id) => {
     })
 }
  
-module.exports.publish = (req, res, next) => {
+let _publish = (req, res, next) => {
     response = res;
     let timestamp = (new Date()).toUTCString();
     
@@ -211,7 +215,27 @@ module.exports.publish = (req, res, next) => {
         let {userId} = req;
         currentUserID = userId;
         let {tags, content, type, title, image} = req.body;
-        
+        let url = "";
+
+        if (type == 'Q') {
+            url = content
+                    .replace(/[|&;$%@"<>()+,"’'/#*()+=.?]/g, "")
+                    .split(" ")
+                    .join("-");
+
+            if(content[content.length-1] != '?') {
+                content += "?";
+            }       
+        }
+        else {
+            if (title.length > 0) {
+                url = title
+                        .replace(/[|&;$%@"<>()+,"’'/#*()+=.?]/g, "")
+                        .split(" ")
+                        .join("-")
+            }
+        }
+
         let story = new Story({
             content,
             title,
@@ -219,7 +243,8 @@ module.exports.publish = (req, res, next) => {
             type,
             active: true,
             timestamp,
-            image
+            image,
+            url
         });
 
         return saveStory(story, tags, userId)
@@ -230,7 +255,52 @@ module.exports.publish = (req, res, next) => {
     }
 }
 
-module.exports.feed = (req, res, next) => {
+let _storyItem = (req, res) => {
+    try {
+        response = res;
+        if (req.userId) {
+            currentUserID = req.userId;
+            let user = req.params.user || req.userId;
+            let {url} = req.body;
+            Story.find({active: true, url: url}, (err, results) => {
+
+                if (err) {
+                    throw(err);
+                }
+
+                if (results.length < 1) {
+                    return res.status(404).send({ 
+                        success: false, 
+                        message: 'Story not found' 
+                    });
+                }
+
+                _getStoryData(results[0]).then(values => {
+
+                    return res.status(200).send({ 
+                        success: true,
+                        _embedded: values 
+                    });
+
+                }, err => {
+                    throw(err);
+                });
+                
+            });
+        }
+        else {
+            return res.status(403).send({ 
+                success: false, 
+                message: 'Unauthorized request' 
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Error fetching story"});
+    }    
+}
+
+let _feed = (req, res, next) => {
     try {
         response = res;
         if (req.userId) {
@@ -268,7 +338,7 @@ module.exports.feed = (req, res, next) => {
     }
 }
 
-module.exports.feedByUser = (req, res, next) => {
+let _feedByUser = (req, res, next) => {
     try {
         response = res;
         if (req.userId) {
@@ -308,7 +378,7 @@ module.exports.feedByUser = (req, res, next) => {
     }    
 }
 
-module.exports.addReply = (req, res) => {
+let _addReply = (req, res) => {
     try {
         let reply = req.body.content;
         let story = req.body.story;
@@ -351,7 +421,7 @@ module.exports.addReply = (req, res) => {
     }
 }
 
-module.exports.replyFeed = (req, res) => {
+let _replyFeed = (req, res) => {
     try {
         let {story} = req.params;
         let {userId} = req.userId;
@@ -441,7 +511,7 @@ module.exports.replyFeed = (req, res) => {
     }    
 }
 
-module.exports.downVote = (req, res) => {
+let _downVote = (req, res) => {
     try {
         response = res;
         let {userId} = req;
@@ -485,8 +555,7 @@ module.exports.downVote = (req, res) => {
     }
 }
 
-
-module.exports.tagFeed = (req, res) => {
+let _tagFeed = (req, res) => {
     try {  
           if (req.userId) {
                 Activity.distinct('story', (err, results) => {
@@ -517,4 +586,18 @@ module.exports.tagFeed = (req, res) => {
       console.error(err);
       return res.status(500).json({success:false, message: "Something gone wrong"});
     }
-  }
+}
+
+
+module.exports.getStoryById = _getStoryById;
+module.exports.getStoryData = _getStoryData;
+module.exports.publish = _publish;
+module.exports.feed = _feed;
+module.exports.storyItem = _storyItem;
+module.exports.feedByUser = _feedByUser;
+module.exports.addReply = _addReply;
+module.exports.replyFeed = _replyFeed;
+module.exports.downVote = _downVote;
+module.exports.tagFeed = _tagFeed;
+
+

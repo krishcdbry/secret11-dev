@@ -1,27 +1,171 @@
 import React from 'react';
-import Storyform from './story/Storyform';
+import {connect} from 'react-redux';
+import random from '../helpers/random';
 import Header from './common/Header';
+import { 
+    getTokenHeaders,
+    SERVER, 
+    TAG_INFO_API,
+    TAG_LIST_API,
+    TAG_FOLLOW_API,
+    TAG_UNFOLLOW_API,
+    STORY_ITEM_API
+} from '../config/network';
+import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
+import Storyfeed from './story/Storyfeed';
+import Storyform from './story/Storyform';
+import {customAlert} from '../helpers/utils';
+import Tagfeed from './tag/Tagfeed';
+import {Link} from 'react-router-dom';
+import Storyitem from './story/Storyitem';
+import NotFound from './404';
 
-class NotFound extends React.Component {
+class TagPage extends React.Component {
     constructor(context, props) {
         super(context, props);
+        this.state = {
+            story: null,
+            url : this.props.storyUrl,
+            invalidStory: false,
+            tags : [],
+            loading : true
+        }
     }
-    
+
+    _loadTagList() {
+        fetch(SERVER+TAG_LIST_API, {
+            headers : getTokenHeaders()
+        })
+        .then(res => res.json())
+        .then(res => {
+            this.setState({
+                tags : res._embedded
+            })
+        })
+    }
+
+    _loadData(key) {
+        let postBody = {
+            url : key
+        }
+        fetch(SERVER+STORY_ITEM_API, {
+                method : "POST",
+                headers: getTokenHeaders(),
+                body : JSON.stringify(postBody)
+            })
+            .then(res => {
+                return res.json();
+            })
+            .then(res => {
+                if (res.success) {
+                    this.setState({
+                        story: res._embedded,
+                        loading : false
+                    })
+                }
+                else {
+                    this.setState({
+                        invalidStory: true,
+                        story: null,
+                        loading : false
+                    })
+                }
+            }, err => {
+                //
+            })
+    }
+
+    componentDidMount() {
+        this._loadData(this.props.storyUrl);
+        this._loadTagList();
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if(nextProps.storyUrl != prevState.url) {
+            return {
+                url : nextProps.storyUrl,
+            }
+        }
+        return null;
+    }
+
+    componentDidUpdate(prevProps){
+        if (prevProps.storyUrl != this.props.storyUrl) {
+            this._loadData(this.props.storyUrl);
+        }
+    }
+
     render() {
+        let {url, story, invalidStory, loading} = this.state;
+        let storyItemComponent = null;
+        let tagInfoContent = null;
+        let tagsComponent = [];
+        let homeComponent = null;
+
+        this.state.tags.map(item => {
+            let key = random();
+            let link = "/tag/"+item.name;
+            tagsComponent.push(
+                <Link to={link} key={key} className="tag">
+                    {item.name} <span className="count">{item.count}</span>
+                </Link>
+            )
+        })
+
+        tagInfoContent = (
+            <div>
+                <h1>{this.props.storyUrl}</h1>
+            </div>
+        );
+
+        if (!loading) {
+            if (!invalidStory && story) {
+                storyItemComponent = (
+                    <Storyitem story={story} full={true}/>
+                );
+    
+                homeComponent = (
+                    <div className="tag-content home-content">
+                            <div className="tag-block">
+                                <div className="">
+                                    {storyItemComponent}
+                                </div>
+                            </div>
+                            <div className="right-menu">
+                            <div className="sharethis-inline-share-buttons"></div>
+                                <div className="story-tags suggestion">
+                                        {tagsComponent}
+                                </div>
+                           </div>
+                        </div>
+                )
+            }
+            else {
+                homeComponent = (
+                    <NotFound/>
+                )
+            }
+        }
 
         return (
             <div className="home">
                 <Header/>
-                <div className="home-content">
-                    <div className="story-page">
-                        <div className="story-form-wrapper">
-                            <Storyform/>
-                        </div>
-                    </div>
-                </div>
+                {homeComponent}
             </div>
         )
     }
 }
 
-export default NotFound;
+const mapStateToProps = (state) => {
+    return {
+        user : state.user
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+       
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TagPage);

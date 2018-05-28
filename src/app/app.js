@@ -15,6 +15,7 @@ import TagPage from './components/TagPage';
 import ProfilePage from './components/ProfilePage';
 import ProfileEditPage from './components/ProfileEditPage';
 import StoryPage from './components/StoryPage';
+import ComposePage from './components/ComposePage';
 import NotFound from './components/404';
 
 class App extends React.Component {
@@ -130,13 +131,17 @@ class App extends React.Component {
                     }
                     break;
                 }
-                case "story" : {
+                case "compose" : {
                     if (routeId == 'new') {
-                        routeComponent = <StoryPage/>
+                        routeComponent = <ComposePage/>
                     }
                     else {
                         routeComponent = <NotFound/>
                     }
+                    break;
+                }
+                case "story" : {
+                    routeComponent = <StoryPage storyUrl={routeId}/>
                     break;
                 }
 
