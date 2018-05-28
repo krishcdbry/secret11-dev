@@ -123,6 +123,8 @@ class TagPage extends React.Component {
                 storyItemComponent = (
                     <Storyitem story={story} full={true}/>
                 );
+
+                window.document.title = (story.type == "Q") ? story.content : story.title;
     
                 homeComponent = (
                     <div className="tag-content home-content">
