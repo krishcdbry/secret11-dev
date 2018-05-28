@@ -1298,6 +1298,41 @@ header {
     }
   }
   
+  .share-box {
+    display: flex;
+    margin: 0px 5px;
+    padding-bottom: 10px;
+    justify-content: space-between;
+
+    .share-item {
+        width: 20%;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.fb {
+            background: #3B5998;
+        }
+
+        &.tw {
+            background: #55acee;
+        }
+
+        &.em {
+            background: #7d7d7d;
+        }
+
+        &.pt {
+            background: #CB2027;
+        }
+
+        &.ws {
+            background: #25d366;
+        }
+    }
+  }
+
   .checkmark__circle {
     stroke-dasharray: 166;
     stroke-dashoffset: 166;

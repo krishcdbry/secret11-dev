@@ -16,6 +16,7 @@ import Storyform from './story/Storyform';
 import {customAlert} from '../helpers/utils';
 import Tagfeed from './tag/Tagfeed';
 import {Link} from 'react-router-dom';
+import ShareBox from './widgets/ShareBox';
 
 class TagPage extends React.Component {
     constructor(context, props) {
@@ -174,6 +175,15 @@ class TagPage extends React.Component {
                     </div>
                 )
             }
+
+            let title = this.props.tag
+            let metaData = document.getElementsByTagName('meta');
+            for (var l = 0; l < metaData.length; l++) {
+                if(metaData[l].name == "description") {  
+                    window.document.title = title;
+                    metaData[l].content = title; 
+                }
+            }
         }
 
         if (invalidTag) {
@@ -198,6 +208,7 @@ class TagPage extends React.Component {
                         </div>
                     </div>
                     <div className="right-menu">
+                        <ShareBox/>
                         <div className="story-tags suggestion">
                                 {tagsComponent}
                         </div>

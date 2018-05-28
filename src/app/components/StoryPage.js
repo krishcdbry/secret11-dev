@@ -19,6 +19,7 @@ import Tagfeed from './tag/Tagfeed';
 import {Link} from 'react-router-dom';
 import Storyitem from './story/Storyitem';
 import NotFound from './404';
+import ShareBox from './widgets/ShareBox';
 
 class TagPage extends React.Component {
     constructor(context, props) {
@@ -124,7 +125,14 @@ class TagPage extends React.Component {
                     <Storyitem story={story} full={true}/>
                 );
 
-                window.document.title = (story.type == "Q") ? story.content : story.title;
+                let title = (story.type == "Q") ? story.content : story.title;
+                let metaData = document.getElementsByTagName('meta');
+                for (var l = 0; l < metaData.length; l++) {
+                    if(metaData[l].name == "description") {  
+                        window.document.title = title;
+                        metaData[l].content = title; 
+                    }
+                }
     
                 homeComponent = (
                     <div className="tag-content home-content">
@@ -134,7 +142,7 @@ class TagPage extends React.Component {
                                 </div>
                             </div>
                             <div className="right-menu">
-                            <div className="sharethis-inline-share-buttons"></div>
+                                <ShareBox/>
                                 <div className="story-tags suggestion">
                                         {tagsComponent}
                                 </div>
