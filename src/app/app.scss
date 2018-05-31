@@ -396,8 +396,8 @@ header {
 
     .storyfeed {
         display: flex;
-        flex-direction: column;
         flex-flow: row wrap;
+        flex-direction: row!important;
         width: calc(100% - 250px);
         min-width: calc(100% - 250px);
     }
