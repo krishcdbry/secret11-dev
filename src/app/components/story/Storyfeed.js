@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import Storyitem from './Storyitem';
+import StoryitemMini from './StoryitemMini';
 import { SERVER, STORY_FEED_API, getTokenHeaders } from '../../config/network';
 import { createActionOnStoryFeedLoaded } from '../../actions/actions';
 import random from '../../helpers/random';
@@ -48,7 +48,7 @@ class Storyfeed extends React.Component {
             storyfeed.forEach(item => {
                 let key = random();
                 feedComponent.push(
-                    <Storyitem story={item} key={key}/>
+                    <StoryitemMini story={item} key={key}/>
                 )
             })
         }

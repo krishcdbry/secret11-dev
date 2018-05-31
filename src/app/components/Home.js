@@ -108,16 +108,14 @@ class Home extends React.Component {
                                 <img src={imgSrc}/>
                             </div>
                         </Link>
+                        <div className="story-tags suggestion">
+                                {tagsComponent}
+                        </div>
                    </div>
                    <div className="story-form-wrapper" style={this.state.formStyle}>
                         {storyFormComponent}
                    </div>
                    <Storyfeed/>
-                   <div className="right-menu">
-                        <div className="story-tags suggestion">
-                                {tagsComponent}
-                        </div>
-                   </div>
                 </div>
             </div>
         )
