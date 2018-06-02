@@ -279,12 +279,12 @@ header {
     opacity: 1 !important;
     
     @media(max-width: 1024px) {
-        width: 980px;
+        width: 980px!important;
     }
 
     @media(max-width: 980px) {
         flex-wrap: wrap;
-        width: 98%;
+        width: 98%!important;
     }
 
     @media(max-width: 780px) {
