@@ -25,78 +25,8 @@ class StoryitemMini extends React.Component {
             fullStory: (this.props.full) ? true : false,
             expandImage : false
         }
-    }
-    
-    _openInput () {
-        if (this.state.story.type == 'Q') {
-            //this._loadAnswers();
-            this._loadReplies();
-        }
-        else {
-            this._loadReplies();
-        }
-        let open = !this.state.openInput;
-        this.setState({
-            openInput: open
-        })
-    }
 
-    _handleReplyChange(e) {
-        this.setState({
-            reply: e.target.value
-        })
-    }
-
-    _resetReply(){
-        this.setState({
-            reply: ""
-        })
-    }
-
-    _sendReply() {
-        let {reply, story} = this.state;
-
-        if (reply.length > 0) {
-            
-            let replyData = {
-                content : reply,
-                story : story.id
-            }
-
-            fetch(SERVER+STORY_REPLY_PUBLISH_API, {
-                method: 'POST',
-                headers: getTokenHeaders(),
-                body: JSON.stringify(replyData)
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    this._resetReply();
-                    this._loadReplies(1);
-                }
-            })
-            .catch((err)=>console.log(err))
-        }
-    }
-
-    _loadReplies(force=false) {
-        let {id} = this.state.story;
-
-        if (this.state.replyData.length < 1 || force) {
-
-            fetch(SERVER+STORY_REPLY_GET_API+id, {
-                headers: getTokenHeaders(),
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    this.setState({
-                        replyData: data._embedded
-                    })
-                }
-            })
-            .catch((err)=>console.log(err))
-        }
+        console.log(this.props);
     }
 
     _storyVoteProcessed(vote) {
@@ -180,10 +110,12 @@ class StoryitemMini extends React.Component {
         let storyImageComponent = null;
         let displayStoryComponent = null;
         let expandImageComponent = null;
+        let imageComponent = null;
         let storyValue = story.content.trim();
         let expandClass = "";
         let url = "";
-        let spanImageClass = "";
+        let textLength = 150;
+        let imageClass = "";
         let storyStyleComponent = {};
         let trimmedStory = "";
         let imageStyle = {
@@ -200,68 +132,37 @@ class StoryitemMini extends React.Component {
             url = "/story/"+story.url;
         }
 
-        if (storyValue.length > 90 && !fullStory) {
-            trimmedStory = storyValue.substr(0, 90) + '...';
+        if (story.image.length > 3) {
+            imageComponent = (
+                <div className="image-component">
+                    <img src={story.image}/>
+                </div>
+            )
+            imageClass = "with-image";
+            textLength = 100;
+        }
+
+        if (storyValue.length > textLength && !fullStory) {
+            trimmedStory = storyValue.substr(0, textLength) + '...';
         }
         else {
             trimmedStory = storyValue;
         }
 
-        if (story.image) {
-            if (story.image.length > 0) {
-                storyStyleComponent = {
-                    'backgroundImage' : 'url('+story.image+')',
-                    'backgroundSize' : 'cover'
-                }
-
-                spanImageClass = "span-image";
-
-                displayStoryComponent = (
-                    <span style={storyStyleComponent} className={spanImageClass}>
-                        <span class="text-main-content">
-                            {trimmedStory}
-                            <Link to={url} className="view-more">View more</Link>
-                        </span>
-                        <span class="text-wrapper"></span>
-                    </span>
-                )
-            }
-            else {
-                displayStoryComponent = (
-                    <span style={storyStyleComponent} className={spanImageClass}>
-                        {storyValue}
-                    </span>
-                )
-            }
-        }
-
-        let optionContent = (
-            <a href="javascript:;" className="reply" onClick={this._openInput.bind(this)}>Reply 
-                <span className="count">{story.reply.count} </span>
-            </a>
+        displayStoryComponent = (
+            <div style={storyStyleComponent} className={imageClass}>
+                {trimmedStory}
+            </div>
         )
 
-        if (story.type == "Q") {
-            storyClass += " question";
-            questionIndicator = (
-                <div className="question-indicator">Q</div>
-            )
-            optionContent = (
-                <a href="javascript:;" className="reply" onClick={this._openInput.bind(this)}>Answer 
-                    <span className="count">{story.answer.count} </span>
-                </a>
-            )
-
-            let url = "/story/"+story.url;
-
-            displayStoryComponent = (
-                <Link to={url}>
-                     <span>
-                        {storyValue}
-                    </span>
-                </Link>
-            )
-        }
+        let optionContent = (
+            <Link to={url} className="reply">
+                <a href="javascript:;">
+                    <i className="fa fa-comment-o"></i>
+                </a> 
+                <span className="count">{story.reply.count}</span>
+            </Link>
+        )
 
         if (story.tags.length > 0) {
             story.tags.forEach(item => {
@@ -273,43 +174,9 @@ class StoryitemMini extends React.Component {
             });
         }
 
-
         if (story.upvote.voted) {
             voteClass = "fa fa-heart voted";
         }
-
-        if (this.state.openInput) {
-            inputHandler = (
-                <div className="reply-compose">
-                     <textarea 
-                          placeholder="Start typing.." 
-                          autoFocus="true" 
-                          value={this.state.reply}
-                          onChange={this._handleReplyChange.bind(this)}></textarea>
-                        
-                    <a href="javascript:;" className="app-button" onClick={this._sendReply.bind(this)}>Send</a>
-                </div>
-            );
-        }
-
-        this.state.replyData.map(item => {
-            let key = random()
-            let profileLink = "/"+item.user.username;
-            replyContent.push(
-                <div className="reply-item" key={key}>
-                        <div className="reply-user">
-                            <Link to={profileLink}><img src={item.user.image}/></Link>
-                            <span className="timestamp">{item.timestamp}</span>
-                        </div>
-                        <div className="reply-content">
-                            <Link to={profileLink}>
-                                <span className="username">{item.user.username}</span>
-                            </Link>
-                            <span className="reply">{item.reply}</span>
-                        </div>
-                </div>
-            )
-        })
 
         if (story.title) {
             if (story.title.length > 0) {
@@ -323,30 +190,38 @@ class StoryitemMini extends React.Component {
             }
         }
 
-        if(story.upvote.count > 0) {
+        //if(story.upvote.count > 0) {
             upvoteCountContent = (
-                <Link to={url} className="reply">Likes <span className="count">{story.upvote.count} </span>
-                </Link>
+                <a href="javascript:;" className="reply" onClick={this._voted.bind(this)}>  
+                    <a href="javascript:;">
+                        <i className={voteClass}></i>
+                    </a>
+                    <span className="count">{story.upvote.count} </span>
+                </a>
             )
-        }
+        //}
         
         return (
             <div className={storyClass}>
                 {questionIndicator}
-                <div className="voting">
-                    <a href="javascript:;" onClick={this._voted.bind(this)}>
-                        <i className={voteClass}></i>
-                    </a>
-                </div>
-                <div className="user-info">
-                    <Link to={profileLink}>
-                        <img className="author" src={story.author.image}/>
-                    </Link>
+                <div className="topic-tag">
+                    {story.topic.name}
                 </div>
                 <div className="story-data">
-                    <div className="text-content">
+                    <div className="title-section">
                         {storyTitleContent}
-                        {displayStoryComponent}
+                        <div class="author-section">
+                            <Link to={profileLink}>
+                                <img className="author" src={story.author.image}/> {story.author.username}
+                            </Link>
+                        </div>
+                    </div>
+                
+                    <div className="context-section">
+                        <div class="story-context text-content">
+                            {displayStoryComponent}
+                            {imageComponent}
+                        </div>
                     </div>
                 </div>
                 <div className="story-options">

@@ -2,10 +2,11 @@ import React from 'react';
 import {connect} from 'react-redux';
 import random from '../helpers/random';
 import Header from './common/Header';
-import { USER_LOGOUT_API, SERVER, TAG_LIST_API, getTokenHeaders } from '../config/network';
-import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
+import { USER_LOGOUT_API, SERVER, TAG_LIST_API, TOPIC_API, getTokenHeaders, TOPIC_LIST_API } from '../config/network';
+import { createActionUserLoggedOut, createActionStoryPublished, createActionOnTopicsLoaded } from '../actions/actions';
 import Storyfeed from './story/Storyfeed';
 import Storyform from './story/Storyform';
+import MainMenu from './common/MainMenu';
 import {customAlert} from '../helpers/utils';
 import {Link} from 'react-router-dom';
 
@@ -13,14 +14,16 @@ class Home extends React.Component {
     constructor(context, props) {
         super(context, props);
         this.state = {
-            formStyle : {},
+            formStyle : {}, 
             formOpen : false,
             iconStyle : {},
+            topics : [],
             tags : []
         }
     }
 
     componentDidMount() {
+
         fetch(SERVER+TAG_LIST_API, {
             headers : getTokenHeaders()
         })
@@ -64,13 +67,16 @@ class Home extends React.Component {
     }
 
     render() {
-        let {user, onStoryPublish} = this.props;
-
+        let {user, onStoryPublish, topic} = this.props;
+        let homeContent = null;
         let storyFormComponent = null;
-    
         let imgSrc = "/dist/assets/images/add.png";
-
         let tagsComponent = [];
+        let activeMenu = "Feed";
+
+        if (topic) {
+            activeMenu = topic;
+        }
 
         this.state.tags.map(item => {
             let key = random();
@@ -85,25 +91,19 @@ class Home extends React.Component {
         if (this.state.formOpen && !storyFormComponent) {
             storyFormComponent = (
                 <div>
-                    {/* <div className="close-story" onClick={this._toggleStoryForm.bind(this)}>
-                            <a href="javascript:;" className="fa fa-remove"></a>
-                    </div> */}
                     <Storyform onSave={onStoryPublish}/>
                 </div>
             )
             imgSrc = "/dist/assets/images/cancel.png";
         }
-        
-        // onClick={this._toggleStoryForm.bind(this)} 
 
-
-        
-        return (
-            <div className="home">
+        if (this.props.topics.length > 0) {
+            homeContent = (<div className="home">
                 <Header/>
+                <MainMenu tag={activeMenu}/>
                 <div className="home-content home-page">
                     <div className="left-menu">
-                        <Link to="/compose/new">
+                        <Link to="/compose/new" className="create-item">
                             <div className="create" style={this.state.iconStyle}>
                                 <img src={imgSrc}/>
                             </div>
@@ -111,20 +111,23 @@ class Home extends React.Component {
                         <div className="story-tags suggestion">
                                 {tagsComponent}
                         </div>
-                   </div>
-                   <div className="story-form-wrapper" style={this.state.formStyle}>
-                        {storyFormComponent}
-                   </div>
-                   <Storyfeed/>
                 </div>
-            </div>
-        )
+                <div className="story-form-wrapper" style={this.state.formStyle}>
+                        {storyFormComponent}
+                </div>
+                    <Storyfeed topic={topic}/>
+                </div>
+            </div>)
+        }
+        
+        return homeContent;
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        user : state.user
+        user : state.user,
+        topics : state.topics
     }
 }
 

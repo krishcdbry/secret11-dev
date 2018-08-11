@@ -2,21 +2,24 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Header from './components/common/Header';
 import { 
+    getTokenHeaders,
     SERVER,
     USER_API, 
     USER_SIGNUP_API, 
-    USER_DATA_API 
+    USER_DATA_API,
+    TOPIC_LIST_API
 } from './config/network';
 import Signup from './components/auth/signup';
 import Login from './components/auth/Login';
 import Home from './components/Home';
-import { createActionUserLoggedIn } from './actions/actions';
+import { createActionUserLoggedIn, createActionOnTopicsLoaded } from './actions/actions';
 import TagPage from './components/TagPage';
 import ProfilePage from './components/ProfilePage';
 import ProfileEditPage from './components/ProfileEditPage';
 import StoryPage from './components/StoryPage';
 import ComposePage from './components/ComposePage';
 import NotFound from './components/404';
+import MainMenu from './components/common/MainMenu';
 
 class App extends React.Component {
     constructor(context, props) {
@@ -35,7 +38,7 @@ class App extends React.Component {
         }
     }
 
-    componentDidMount() {
+    _fetchUserData() {
         let {userLoggedIn} = this.props;
         let _token = localStorage.getItem('x-access-token');
 
@@ -59,6 +62,32 @@ class App extends React.Component {
                     console.error(err);                    
                 })
         }
+    }
+
+    _fetchTopics() {
+        let topics = localStorage.getItem('topics');
+        if (topics) {
+            topics = JSON.parse(topics);
+            this.props.topicsLoaded(topics);
+        }
+        else {
+            fetch(SERVER+TOPIC_LIST_API, {
+                headers : getTokenHeaders()
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res._embedded);
+                this.props.topicsLoaded(res._embedded);
+            })
+            .catch(err => {
+                // Error
+            })
+        }
+    }
+
+    componentDidMount() {
+        this._fetchUserData();
+        this._fetchTopics();
     }
 
     changeActiveState(activeState) {
@@ -114,6 +143,10 @@ class App extends React.Component {
             let {routeId, route} = this.state;
             
             switch(route) {
+                case "topic" : {
+                    routeComponent = <Home topic={routeId}/>;
+                    break;
+                }
                 case "tag" : {
                     routeComponent = <TagPage tag={routeId}/>
                     break;
@@ -160,8 +193,9 @@ class App extends React.Component {
             )
         }
         
-        if (loggedIn) {
-            mainComponent = (<div className="maincomponent">
+        if (loggedIn && this.props.topics.length > 0) {
+            mainComponent = (
+            <div className="maincomponent">
                 {routeComponent}
             </div>)
         }
@@ -197,7 +231,8 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        loggedIn: state.loggedIn
+        loggedIn: state.loggedIn,
+        topics : state.topics
     }
 }
 
@@ -205,6 +240,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         userLoggedIn : (user, token) => {
             dispatch(createActionUserLoggedIn(user, token));   
+        },
+        topicsLoaded : (topics) => {
+            dispatch(createActionOnTopicsLoaded(topics))
         }
     }
 }

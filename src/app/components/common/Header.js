@@ -128,9 +128,9 @@ class Header extends React.Component {
                     <div className="user-info">
                             <Link to={profileLink}>
                                 <img src={image}/>
-                                <span className="username">{username}</span>
+                                {/* <span className="username">{username}</span> */}
                             </Link>
-                            |<a href="javascript:;" onClick={this._logout.bind(this)}>Logout</a> 
+                            {/* |<a href="javascript:;" onClick={this._logout.bind(this)}>Logout</a>  */}
                     </div>
                 </div>
             </header>

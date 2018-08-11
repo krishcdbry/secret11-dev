@@ -9,6 +9,7 @@ const Activity = require('../models/activity');
 
 const Storytag = require('../models/storytag');
 const ProfileController = require('./profile-controller');
+const TopicController = require('./topic-controller');
 const TagController = require('./tag-controller');
 const StoryTagController = require('./story-tag-controller');
 
@@ -138,7 +139,7 @@ let _getStoryById = (id) => {
 
 let _getStoryData = (story) => {
 
-    let {content, _id, type, timestamp, image, author, title, url} = story;
+    let {content, _id, type, timestamp, image, author, title, url, topic} = story;
 
     let dateTimeString = Smart.formatDate(timestamp);
 
@@ -158,6 +159,7 @@ let _getStoryData = (story) => {
     let replies = getStoryReplyCount(_id);
     let votes = getStoryVoteCount(_id);
     let isVoted = isUserVoted(_id, currentUserID);
+    let topicData = TopicController.getTopicById(topic);
 
     return Promise.all([
         userData,
@@ -165,7 +167,8 @@ let _getStoryData = (story) => {
         answers,
         replies,
         votes,
-        isVoted
+        isVoted,
+        topicData
     ]).then(function(values) {
 
         // Preparing user object
@@ -194,11 +197,16 @@ let _getStoryData = (story) => {
         // Tags Obj
         let tagsObj = values[1] || [];
 
+
+        // Topic Data
+        let topicObj = values[6];
+
         storyObj.author = userObj;
         storyObj.answer = answerObj;
         storyObj.reply = replyObj;
         storyObj.upvote = voteObj;
         storyObj.tags = tagsObj;
+        storyObj.topic = topicObj;
         
         return storyObj;
 
@@ -214,7 +222,7 @@ let _publish = (req, res, next) => {
     if (req.userId) {
         let {userId} = req;
         currentUserID = userId;
-        let {tags, content, type, title, image} = req.body;
+        let {tags, content, type, title, image, topic} = req.body;
         let url = "";
 
         if (type == 'Q') {
@@ -240,6 +248,7 @@ let _publish = (req, res, next) => {
             content,
             title,
             author : userId,
+            topic,
             type,
             active: true,
             timestamp,
@@ -345,6 +354,46 @@ let _feedByUser = (req, res, next) => {
             currentUserID = req.userId;
             let user = req.params.user || req.userId;
             Story.find({active: true, author: user}, (err, results) => {
+
+                if (err) {
+                    throw(err);
+                }
+
+                let storyPromises = results.map(item => {
+                    return this.getStoryData(item);
+                });
+                
+                Promise.all(storyPromises).then(values => {
+
+                    return res.status(200).send({ 
+                        _embedded: values 
+                    });
+
+                }, err => {
+                    throw(err);
+                });
+                
+            }).sort({"_id": -1}).limit(15);
+        }
+        else {
+            return res.status(403).send({ 
+                success: false, 
+                message: 'Unauthorized request' 
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success:false, message: "Error fetching feed"});
+    }    
+}
+
+let _feedByTopic = (req, res, next) => {
+    try {
+        response = res;
+        if (req.userId) {
+            currentUserID = req.userId;
+            let topic = req.params.topic;
+            Story.find({active: true, topic: topic}, (err, results) => {
 
                 if (err) {
                     throw(err);
@@ -562,7 +611,7 @@ let _tagFeed = (req, res) => {
                   if (err) {
                       throw(err);
                   }
-                  console.log(results);
+            
                   if (!err && results) {
                   
                       let storyPromises = results.map(item => {
@@ -593,6 +642,7 @@ module.exports.getStoryById = _getStoryById;
 module.exports.getStoryData = _getStoryData;
 module.exports.publish = _publish;
 module.exports.feed = _feed;
+module.exports.feedByTopic = _feedByTopic;
 module.exports.storyItem = _storyItem;
 module.exports.feedByUser = _feedByUser;
 module.exports.addReply = _addReply;

@@ -27,6 +27,7 @@ let profileController = require('./controllers/profile-controller');
 let storyController = require('./controllers/story-controller');
 let tagController = require('./controllers/tag-controller');
 let searchController = require('./controllers/search-controller');
+let topicController = require('./controllers/topic-controller');
 
 // Firewall for router
 let firewall = require('./helpers/firewall');
@@ -98,8 +99,13 @@ app.put('/user', firewall, profileController.updateUser);
 app.post('/user/follow', firewall, userController.followUser);
 app.delete('/user/follow/:user', firewall, userController.unfollowUser);
 
+// User Follower
+app.get('/topic', firewall, topicController.topics);
+
+
 // Story
 app.get('/story/feed', firewall, storyController.feed);
+app.get('/story/feed/:topic', firewall, storyController.feedByTopic);
 app.post('/story/publish', firewall, storyController.publish);
 app.get('/story/reply/:story', firewall, storyController.replyFeed);
 app.post('/story/reply', firewall, storyController.addReply);

@@ -48,9 +48,36 @@ const fillProgress = () => {
         }
     }, 100);
   }
+
+
+  const getIndexOfkey = (inputArr, needleObj) => {
+
+    if (Object.prototype.toString.call(needleObj) !== '[object Object]') {
+        return "Not a valid needle(object)"
+    }
+
+    if (Object.prototype.toString.call(inputArr) !== '[object Array]') {
+        return "Not a valid array";
+    }
+
+    var idx = -1;
+    var needleKey = Object.keys(needleObj)[0];
+    var needleValue = needleObj[needleKey];
+
+    for (var i = 0; i < inputArr.length; i++) {
+        var val = inputArr[i];
+        if (val[needleKey] == needleValue) {
+            idx = i;
+            break;
+        }
+    }
+
+    return idx;
+}
   
   export {
     customAlert,
     fillProgress,
-    customError
+    customError,
+    getIndexOfkey
   }

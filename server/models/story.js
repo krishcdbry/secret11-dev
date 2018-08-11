@@ -5,6 +5,7 @@ var storySchema = new Schema({
 	content: String,
 	title: String,
 	type: String,
+	topic : Schema.ObjectId,
 	author: Schema.ObjectId,
 	active: Boolean,
 	image: String,

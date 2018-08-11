@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import random from '../helpers/random';
 import Header from './common/Header';
+import MainMenu from './common/MainMenu';
 import { 
     SERVER, 
     TAG_INFO_API,

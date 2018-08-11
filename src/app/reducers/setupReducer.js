@@ -2,14 +2,16 @@ import {
     USER_LOGGED_IN, 
     USER_LOGGED_OUT,
     STORY_PUBLISH_APIED, 
-    STORY_FEED_API_LOADED
+    STORY_FEED_API_LOADED,
+    TOPICS_LOADED
 } from "../actions/actions";
 
 let kInitialState = {
     token : null,
     loggedIn : false,
     user : null,
-    storyfeed : []
+    storyfeed : [],
+    topics : []
 }
 
 const setupReducer = (state = kInitialState, action) => {
@@ -22,6 +24,16 @@ const setupReducer = (state = kInitialState, action) => {
         case USER_LOGGED_OUT: {
             localStorage.removeItem("x-access-token");
             return Object.assign({}, state, {user : null, loggedIn: false, token: null})
+        }
+        case TOPICS_LOADED: {
+            let {topics} = action;
+            if (topics[0].name != 'Feed') {
+                topics.unshift({
+                    "name" : "Feed"
+                })
+            }
+            localStorage.setItem("topics", JSON.stringify(topics));
+            return Object.assign({}, state, {topics})
         }
         case STORY_FEED_API_LOADED: {
             let {feed} = action;

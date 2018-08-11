@@ -24,12 +24,16 @@ const USER_LOGOUT_API = "/auth/logout";
 const USER_FOLLOW_API = "/user/follow";
 const USER_UNFOLLOW_API = "/user/follow/";
 
+const TOPIC_LIST_API = "/topic";
+
 const STORY_PUBLISH_API = "/story/publish";
 const STORY_FEED_API = "/story/feed";
+const STORY_FEED_BY_TOPIC = "/story/feed/";
 const STORY_REPLY_GET_API = "/story/reply/";
 const STORY_REPLY_PUBLISH_API = "/story/reply";
 const STORY_PROFILEFEED_API = "/story/userfeed/";
 const STORY_ITEM_API = "/story/item";
+
 
 const STORY_UPVOTE_API = "/story/vote";
 const STORY_DOWNVOTE_API = "/story/vote/";
@@ -67,8 +71,11 @@ export {
     USER_LOGIN_API,
     USER_LOGOUT_API,
 
+    TOPIC_LIST_API,
+
     STORY_PUBLISH_API,
     STORY_FEED_API,
+    STORY_FEED_BY_TOPIC,
     STORY_REPLY_GET_API,
     STORY_REPLY_PUBLISH_API,
     STORY_PROFILEFEED_API,

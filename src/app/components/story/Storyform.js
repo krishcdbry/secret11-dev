@@ -22,7 +22,27 @@ class Storyform extends React.Component {
             title : '',
             openSearch: false,
             image : '',
+            topic : this.props.topics[1]
         }
+    }
+
+    _handleSelectBoxEvent() {
+        let selected = document.getElementById('selected');
+        let dropdown = document.getElementById('dropdown');
+
+        selected.onclick = () => {
+        dropdown.classList.toggle('show');
+        }
+
+        dropdown.onclick = (e) => {
+            if (e.target.nodeName == 'A') {
+                dropdown.classList.toggle('show');
+            }
+        }
+    }
+
+    componentDidMount () {
+        this._handleSelectBoxEvent();
     }
 
     _resetState() {
@@ -35,6 +55,7 @@ class Storyform extends React.Component {
             title : '',
             openSearch: false,
             image : '',
+            topic : this.props.topics[1]
         });
     }
 
@@ -50,7 +71,7 @@ class Storyform extends React.Component {
             return false;
         }
         else {
-            val = val.substr(0,249);
+            val = val.substr(0,199);
         }
         this.setState({
             qstory: val
@@ -59,11 +80,11 @@ class Storyform extends React.Component {
 
     _handleTitleChange(e) {
         let val = e.target.value;
-        if (val > 250) {
+        if (val > 200) {
             return false;
         }
         else {
-            val = val.substr(0,249);
+            val = val.substr(0,199);
         }
         this.setState({
             title: val
@@ -112,12 +133,15 @@ class Storyform extends React.Component {
     _publishStory() {
         let {onSave} = this.props;
 
+        console.log("State", this.state);
+
         let storyData = {
             content : this.state.story,
             type : 'S',
             tags : this.state.tags.join(","),
             title: this.state.title,
-            image : this.state.image
+            image : this.state.image,
+            topic : this.state.topic._id
         }
 
         if (this.state.question) {
@@ -170,9 +194,16 @@ class Storyform extends React.Component {
         })
     }
 
+    _selectTopic(topic) {
+        this.setState({
+            topic : topic
+        })
+    }
+
     render() {
-        let {tags, question, openSearch, image} = this.state;
+        let {tags, question, openSearch, image, topic} = this.state;
         let divComponent = [];
+        let dropdownItems = [];
         let SearchBoxComponent = null;
         let imageComponent = null;
         let textareaStyle = {
@@ -200,29 +231,17 @@ class Storyform extends React.Component {
                 <input type="text"
                     autoFocus="true" 
                     className="story-title" 
-                    placeholder="Title (Max 250 Characters)"
+                    autoFocus="true"
+                    placeholder="Title/Question (Max 250 Characters)"
                     value={this.state.title}
                     onChange={this._handleTitleChange.bind(this)}
                 />
-                <textarea placeholder="Start typing" 
-                          autoFocus="true" 
+                <textarea placeholder="Context"  
                           value={this.state.story}
                           style={textareaStyle}
                           onChange={this._handleStoryChange.bind(this)}></textarea>
             </div>
         );
-
-        if (question) {
-            inputClass = "question";
-            formInputContent = (
-                <textarea placeholder="Start typing  (Max 250 Characters)" 
-                          autoFocus="true" 
-                          className="question" 
-                          style={textareaStyle}
-                          value={this.state.qstory}
-                          onChange={this._handleQStoryChange.bind(this)}></textarea>
-            );
-        }
 
         if (openSearch) {
             SearchBoxComponent = (
@@ -240,17 +259,31 @@ class Storyform extends React.Component {
                 </div>
             )
         }
+        
+        // Dropdown items
+        for (let item of this.props.topics) {
+            if (item.name != 'Feed') {
+                dropdownItems.push(
+                    <a href="javascript:;" className="option-item" onClick={() => this._selectTopic(item)}>{item.name}</a>
+                )
+            }
+        }
 
         return (
             <div className="story-form">
-                <br/>
-                <div class="question-switcher">
+                {/* <div class="question-switcher">
                     <div className="pretty p-icon p-round p-pulse">
                         <input type="checkbox" value={this.state.question} onChange={this._handleQuestionChange.bind(this)}/>
                         <div className="state p-success">
                             <i className="icon mdi mdi-check"></i>
                             <label>Question</label>
                         </div>
+                    </div>
+                </div> */}
+                <div class="selectbox">
+                    <span class="selected option-item" id="selected">{topic.name}</span>
+                    <div class="dropdown" id="dropdown">
+                        {dropdownItems}
                     </div>
                 </div>
                 {formInputContent}
@@ -279,4 +312,17 @@ class Storyform extends React.Component {
     }
 }
 
-export default Storyform;
+const mapStateToProps = (state) => {
+    return {
+        user : state.user,
+        topics : state.topics
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+       
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Storyform);

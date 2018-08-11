@@ -36,6 +36,11 @@ render(
                             fillProgress();
                             return <App route="tag" {...props} /> 
                         }}/> 
+
+                        <Route path="/topic/:id" render={(props) => { 
+                            fillProgress();
+                            return <App route="topic" {...props} /> 
+                        }}/> 
                     
                         <Route path="/:id" render={(props) => { 
                             fillProgress();

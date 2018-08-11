@@ -2,6 +2,7 @@ const USER_LOGGED_IN = "USER_LOGGED_IN";
 const USER_LOGGED_OUT = "USER_LOGGED_OUT";
 const STORY_PUBLISH_APIED = "STORY_PUBLISH_APIED";
 const STORY_FEED_API_LOADED = "STORY_FEED_API_LOADED";
+const TOPICS_LOADED = "TOPICS_LOADED";
 
 function createActionUserLoggedIn(user, token) {
     return {
@@ -31,14 +32,23 @@ function createActionOnStoryFeedLoaded(feed) {
     }    
 }
 
+function createActionOnTopicsLoaded(topics) {
+    return {
+        type : TOPICS_LOADED,
+        topics
+    }
+}
+
 export {
     USER_LOGGED_IN,
     USER_LOGGED_OUT,
     STORY_PUBLISH_APIED,
     STORY_FEED_API_LOADED,
+    TOPICS_LOADED,
 
     createActionUserLoggedIn,
     createActionUserLoggedOut,
     createActionStoryPublished,
-    createActionOnStoryFeedLoaded
+    createActionOnStoryFeedLoaded,
+    createActionOnTopicsLoaded
 }
