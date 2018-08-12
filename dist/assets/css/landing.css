@@ -91,7 +91,6 @@ body {
 }
 .notify-btn {
     background: rgba(0, 0, 0, 0.3);
-    width: 98px;
     display: block;
     padding: 10px;
     color: #fff;
@@ -103,8 +102,6 @@ body {
 
 .notify-me {
     margin-top: 90px;
-    display: flex;
-    justify-content: space-between;
 }
 
 .lds-ripple {
