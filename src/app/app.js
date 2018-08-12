@@ -92,10 +92,10 @@ class App extends React.Component {
             <div className="main-component">
                 <span className="name">Secret<span className="num">11</span></span><br/><span className="caption">The anonymous planet (11th). </span><br/>
                         <div className="site-info">Stay tuned to enter into a new world.</div>
-                {/* <div className="notify-me">
-                            <a href="javascript:;" className="notify-btn" id="login-btn" onClick={() => this.changeActiveState("L")}>Login</a>
-                            <a href="javascript:;" className="notify-btn" id="join-us-btn" onClick={() => this.changeActiveState("S")}>Join Us</a>
-                </div> */}
+                <div className="notify-me">
+                            <a href="javascript:;" className="notify-btn" id="login-btn" onClick={() => this.changeActiveState("L")}>Login (Invited Users)</a>
+                            {/* <a href="javascript:;" className="notify-btn" id="join-us-btn" onClick={() => this.changeActiveState("S")}>Join Us</a> */}
+                </div>
             </div>
         )
 
