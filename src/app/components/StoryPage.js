@@ -78,7 +78,7 @@ class TagPage extends React.Component {
 
     componentDidMount() {
         this._loadData(this.props.storyUrl);
-        this._loadTagList();
+       // this._loadTagList();
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {

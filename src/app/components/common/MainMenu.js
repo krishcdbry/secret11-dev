@@ -9,8 +9,17 @@ class MainMenu extends React.Component {
     }
 
     render () {
-        let {topics} = this.props;
+        let {topics, user} = this.props;
         let menuComponent = [];
+
+        if (topics.length != 12) {
+            if (user) {
+                topics.unshift({"name" : "Feed"})
+            }
+            else {
+                topics.unshift({"name" : "All"})
+            }
+        }
 
         for (let topic of topics) {
             let item = topic.name;
@@ -18,7 +27,7 @@ class MainMenu extends React.Component {
             let link =  "/topic/"+item;
             let itemClass = "item-"+item;
 
-            if (item == 'Feed') {
+            if (item == 'Feed' || item == 'All') {
                 link =  "/";
             }
             

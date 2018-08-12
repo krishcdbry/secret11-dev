@@ -32,7 +32,6 @@ body {
     text-align: center;
     height: 100%;
     width: 100%;
-    overflow: hidden;
 }
 
 a {
@@ -49,22 +48,22 @@ a {
 }
 
 .signup-component {
-    position: absolute;
+    // position: absolute;
     width: auto;
     height: auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%);
     -webkit-transition: 1.5s;
     -moz-transition: 1.5s;
     -o-transition: 1.5s;
     transition: 1.5s;
 
-    -webkit-animation: bounce 1s 1!important;
-	-moz-animation: bounce 1s 1!important;
-	-o-animation: bounce 1s 1!important;
-	animation: bounce 1s 1!important;
-	opacity: 1 !important;
+    // -webkit-animation: bounce 1s 1!important;
+	// -moz-animation: bounce 1s 1!important;
+	// -o-animation: bounce 1s 1!important;
+	// animation: bounce 1s 1!important;
+	// opacity: 1 !important;
 
     &.show {
         opacity: 1;
@@ -111,7 +110,7 @@ input[type=text], input[type=search], input[type=password] {
   outline : none;
   border: 0;
   padding: 5px;
-  color: #fff;
+  color: #000;
    font-size: 17px;
 }
 
@@ -119,6 +118,7 @@ input[type=text], input[type=search], input[type=password] {
     h2 {
         color: #22a0ce;
     }
+    overflow-y: auto;
 }
 
 
@@ -242,6 +242,7 @@ header {
             color: #999;
             display: flex;
             align-items: center;
+            margin: 0px 10px;
             
             a {
                 display: flex;
@@ -273,7 +274,7 @@ header {
     align-items: center;
     color: #000;
     display: flex;
-    z-index: 999999;
+    z-index: 999;
     flex-wrap: wrap;
     box-sizing: border-box;
 
@@ -285,6 +286,10 @@ header {
         border-bottom: 2px solid transparent;
         box-sizing: border-box;
         display: block;
+
+        @media(max-width: 768px) {
+            padding: 15px 5px;
+        }
 
         &.active {
             font-weight: bold;
@@ -1357,7 +1362,7 @@ header {
     width: 400px;
     height: 400px;
     position: absolute;
-    z-index: 999999999;
+    z-index: 999;
     box-shadow: 0 2px 16px -1px rgba(0,0,0,0.25);
     border: 1px solid #ddd;
     overflow: hidden;
@@ -1619,8 +1624,6 @@ header {
     color: #999;
 }
 
-
-
 .progress-bar-live {
     width: 0%;
     background-color: limegreen;
@@ -1837,3 +1840,65 @@ header {
     justify-content: center;
     width: 100%;
   }
+
+  // Modal
+
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(1.2);
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+     -ms-transition: all 0.3s ease-in-out;
+     z-index: 9999999999999;
+
+       
+    .modal {
+    background: #fff;
+    /* padding: 35px 20px; */
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 16px;
+        img {
+            transform: rotate(45deg);
+        }
+    }
+
+    &.show {
+        opacity: 1;
+        transform : scale(1);
+        pointer-events: all;
+    }
+}
+  
+  @keyframes bounceIn {
+    0% {
+       transform : scale(1.2);
+    }
+    100% {
+       transform : scale(1);
+    }
+  }
+  

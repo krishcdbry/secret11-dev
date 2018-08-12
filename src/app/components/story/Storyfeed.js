@@ -51,6 +51,7 @@ class Storyfeed extends React.Component {
 
     render() {
         let {storyfeed} = this.state;
+        let {user} = this.props;
         let key = random();
         let feedComponent = [
             <div key={key} className="feed-loader">
@@ -68,7 +69,7 @@ class Storyfeed extends React.Component {
             storyfeed.forEach(item => {
                 let key = random();
                 feedComponent.push(
-                    <StoryitemMini story={item} key={key}/>
+                    <StoryitemMini story={item} user={user} key={key}/>
                 )
             })
         }
@@ -89,7 +90,8 @@ class Storyfeed extends React.Component {
 const mapStateToProps = (state) => {
     return {
         storyfeed : state.storyfeed,
-        topics : state.topics
+        topics : state.topics,
+        user : state.user
     }
 }
 

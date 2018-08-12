@@ -14,7 +14,7 @@ import {
 import { createActionUserLoggedOut, createActionStoryPublished } from '../actions/actions';
 import Storyfeed from './story/Storyfeed';
 import Storyform from './story/Storyform';
-import {customAlert} from '../helpers/utils';
+import {customAlert, modalToggle} from '../helpers/utils';
 import Tagfeed from './tag/Tagfeed';
 import {Link} from 'react-router-dom';
 import ShareBox from './widgets/ShareBox';
@@ -66,6 +66,11 @@ class TagPage extends React.Component {
     }
 
     _followTag() {
+        let {user} = this.props;
+        if (!user) {
+            modalToggle();
+            return;
+        }
         let {id, name} = this.state.tag;
         let storyTag = {
             tag : id

@@ -105,7 +105,7 @@ app.get('/topic', firewall, topicController.topics);
 
 // Story
 app.get('/story/feed', firewall, storyController.feed);
-app.get('/story/feed/:topic', firewall, storyController.feedByTopic);
+app.get('/story/feed/:topic', storyController.feedByTopic);
 app.post('/story/publish', firewall, storyController.publish);
 app.get('/story/reply/:story', firewall, storyController.replyFeed);
 app.post('/story/reply', firewall, storyController.addReply);

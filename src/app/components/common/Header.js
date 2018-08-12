@@ -8,7 +8,15 @@ import {
     getTokenHeaders
 } from '../../config/network';
 
-import { createActionUserLoggedOut } from '../../actions/actions';
+import { 
+    createActionUserLoggedOut,
+    createActionToggleModal, 
+    createActionSetModalContent 
+} from '../../actions/actions';
+
+import signup from '../auth/signup';
+import Login from '../auth/Login';
+import {modalToggle} from '../../helpers/utils';
 
 class Header extends React.Component {
     constructor(context, props) {
@@ -17,7 +25,9 @@ class Header extends React.Component {
         this.state = {
             search : "",
             searching: true,
-            results : []
+            results : [],
+            popup : false,
+            activePopup : "L"
         }
     }
 
@@ -74,17 +84,46 @@ class Header extends React.Component {
         this.searchGlobal(val)
     }
 
+    _openModal() {
+        let {setModalContent} = this.props;
+        modalToggle();
+        setModalContent("L");
+    }
+
     render () {
-        let {username, image} = this.props.user;
         let {search, results} = this.state;
-
-        let profileLink = "/"+username;
-
+        let username = null;
+        let image = null;
+        let profileLink = null;
+        let userComponent = null;
         let searchComponent = null;
         let searchResultsComponent = [];
+        let closeModalSrc = "/dist/assets/images/add.png";
+
+        if (this.props.user) {
+            username = this.props.user.username;
+            image = this.props.user.image;
+            profileLink = "/"+username;
+            userComponent =  (<div className="user-info">
+                                <Link to={profileLink}>
+                                    <img src={image}/>
+                                </Link>
+                                 <a href="javascript:;" onClick={this._logout.bind(this)}>Logout</a>  
+                        </div>)
+        }
+        else {
+            userComponent = (
+                <div className="user-info">
+                    <a href="javascript:;" onClick={this._openModal.bind(this)}>Login</a>
+                </div>
+            )
+        }
+
+        if (this.state.popup) {
+            loginSignComponent = (this.state.activePopup == "L") ? <Login/> : <Signup/>
+        }
 
         if (search.length > 0) {
-            
             if (results.length > 0) {
                 results.map(item => {
                     let profileLink = "/"+item.username;
@@ -125,13 +164,7 @@ class Header extends React.Component {
                             {searchComponent}
                         </div>
                     </div>
-                    <div className="user-info">
-                            <Link to={profileLink}>
-                                <img src={image}/>
-                                {/* <span className="username">{username}</span> */}
-                            </Link>
-                            {/* |<a href="javascript:;" onClick={this._logout.bind(this)}>Logout</a>  */}
-                    </div>
+                    {userComponent}
                 </div>
             </header>
         )
@@ -148,6 +181,12 @@ let mapDispatchToProps = (dispatch) => {
     return {
         onUserLoggedOut : () => {
             dispatch(createActionUserLoggedOut())
+        },
+        toggleModal : () => {
+            dispatch(createActionToggleModal());
+        },
+        setModalContent : (content) => {
+            dispatch(createActionSetModalContent(content));
         }
     }
 }

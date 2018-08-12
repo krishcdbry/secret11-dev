@@ -12,7 +12,10 @@ import {
 import Signup from './components/auth/signup';
 import Login from './components/auth/Login';
 import Home from './components/Home';
-import { createActionUserLoggedIn, createActionOnTopicsLoaded } from './actions/actions';
+import { 
+    createActionUserLoggedIn,
+    createActionOnTopicsLoaded
+} from './actions/actions';
 import TagPage from './components/TagPage';
 import ProfilePage from './components/ProfilePage';
 import ProfileEditPage from './components/ProfileEditPage';
@@ -20,6 +23,7 @@ import StoryPage from './components/StoryPage';
 import ComposePage from './components/ComposePage';
 import NotFound from './components/404';
 import MainMenu from './components/common/MainMenu';
+import {modalToggle} from './helpers/utils';
 
 class App extends React.Component {
     constructor(context, props) {
@@ -34,7 +38,8 @@ class App extends React.Component {
         this.state = {
             activeState : "N",
             route : this.props.route || null,
-            routeId : routeId || null
+            routeId : routeId || null,
+            loading: true
         }
     }
 
@@ -56,11 +61,22 @@ class App extends React.Component {
                     if (res.id) {
                         document.body.className = "home";
                         userLoggedIn(res, _token);
+                        this.setState({
+                            loading : false
+                        })
                     }
                 })
                 .catch(err => {
-                    console.error(err);                    
+                    console.error(err);  
+                    this.setState({
+                        loading : false
+                    })                  
                 })
+        }
+        else {
+            this.setState({
+                loading : false
+            }) 
         }
     }
 
@@ -110,12 +126,18 @@ class App extends React.Component {
         return null;
     }
 
+    _closeModal() {
+        modalToggle();
+    }
+
     // N - Normal
     // L - Login
     // S - Signup
     render () {
-        let {activeState} = this.state;
+        let {activeState, routeId} = this.state;
         let {loggedIn} = this.props;
+        let closeModalSrc = "/dist/assets/images/add.png";
+        let loginSignComponent = null;
 
         let signupLoginComponent = (
             <div className="main-component">
@@ -128,6 +150,8 @@ class App extends React.Component {
             </div>
         )
 
+        loginSignComponent = (this.props.modalConfig.content == "L") ? <Login/> : <Signup/>
+        
         if (activeState == "L") {
             signupLoginComponent = (
                 <div className="main-component">
@@ -139,9 +163,9 @@ class App extends React.Component {
         let mainComponent = null;
         let routeComponent = <Home/>;
     
-        if (this.state.route) {
-            let {routeId, route} = this.state;
-            
+        if (this.state.routeId) {
+            let {route} = this.state;
+
             switch(route) {
                 case "topic" : {
                     routeComponent = <Home topic={routeId}/>;
@@ -193,37 +217,51 @@ class App extends React.Component {
             )
         }
         
-        if (loggedIn && this.props.topics.length > 0) {
+        if (this.props.topics.length > 0) {
             mainComponent = (
             <div className="maincomponent">
                 {routeComponent}
             </div>)
         }
-        else {
-            mainComponent = (
-                <div className="maincomponent">
-                    <div className="load-wrapper" id="load-wrapper">
-                        <div className="lds-css ng-scope">
-                            <div className="lds-ripple">
-                                <div></div>
-                                <div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="wrapper"></div>
-                    <div id="stars1"></div>
-                    <div id="stars2"></div>
-                    <div id="stars3"></div>
-                    <div className="timer-data">
-                        {signupLoginComponent}
-                    </div>
-                </div>
-            )   
-            window.init()
-        }
+
+        // if (!routeId && !loggedIn && !this.state.loading) {
+        //     console.log("Main ligin/signup");
+        //     mainComponent = (
+        //         <div className="maincomponent">
+        //             <div className="load-wrapper" id="load-wrapper">
+        //                 <div className="lds-css ng-scope">
+        //                     <div className="lds-ripple">
+        //                         <div></div>
+        //                         <div></div>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //             <div className="wrapper"></div>
+        //             <div id="stars1"></div>
+        //             <div id="stars2"></div>
+        //             <div id="stars3"></div>
+        //             <div className="timer-data">
+        //                 {signupLoginComponent}
+        //             </div>
+        //         </div>
+        //     )   
+        //     window.init()
+        // }
+
+        // console.log(this.state);
+        // console.log(mainComponent);
+        
         return (
             <div className="app-container">
                 {mainComponent}
+                <div class="modal-container">
+                    <a href="javascript:;" onClick={this._closeModal.bind(this)} className="close-modal">
+                        <img src={closeModalSrc}/>
+                    </a>
+                    <div class="modal">
+                        {loginSignComponent}
+                    </div>
+                </div>
             </div>
         )
     }
@@ -232,7 +270,8 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
     return {
         loggedIn: state.loggedIn,
-        topics : state.topics
+        topics : state.topics,
+        modalConfig : state.modalConfig
     }
 }
 

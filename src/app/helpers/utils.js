@@ -30,8 +30,6 @@ const customError = (message, isReload) => {
       }
     }, 4000)
 }
-
-
 const fillProgress = () => {
     var progress = document.getElementById('progress-bar-live');
     let num = 0;
@@ -47,10 +45,10 @@ const fillProgress = () => {
         
         }
     }, 100);
-  }
+}
 
 
-  const getIndexOfkey = (inputArr, needleObj) => {
+const getIndexOfkey = (inputArr, needleObj) => {
 
     if (Object.prototype.toString.call(needleObj) !== '[object Object]') {
         return "Not a valid needle(object)"
@@ -74,10 +72,16 @@ const fillProgress = () => {
 
     return idx;
 }
+
+const modalToggle = () => {
+  let modal = document.getElementsByClassName('modal-container')[0];
+  modal.classList.toggle('show');
+}
   
   export {
     customAlert,
     fillProgress,
     customError,
-    getIndexOfkey
+    getIndexOfkey,
+    modalToggle
   }

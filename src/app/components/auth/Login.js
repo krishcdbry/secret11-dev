@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import { createActionUserLoggedIn } from '../../actions/actions';
 import { SERVER, USER_LOGIN_API } from '../../config/network';
-import {customAlert} from '../../helpers/utils'
+import {customAlert, modalToggle} from '../../helpers/utils'
 
 
 class Login extends React.Component {
@@ -49,6 +49,7 @@ class Login extends React.Component {
                 document.body.className = "home";
                 userLoggedIn(data.userData, data.token);
                 customAlert("Welcome! <br/> "+ data.userData.username);
+                modalToggle();
             }
             else {
                 // alert(data.message);
@@ -62,20 +63,24 @@ class Login extends React.Component {
 
         return (
             <div className="signup-component">
-                <form onSubmit={this._login.bind(this)}>
-                    <img src="https://assistance-wordpress.com/wp-content/uploads/2018/02/icon-account.png"/>
-                    <div className="signup-item input">
-                        <label>Username</label>
-                        <input type="text" value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
-                    </div>
-                    <div className="signup-item input">
-                        <label>Password</label>
-                        <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
-                    </div>
-                    <div className="signup-item submit">
-                        <button type="submit" onClick={this._login.bind(this)} className="notify-btn">Login</button>
-                    </div>
-                </form>
+               {/* <div className="component-info">
+                    Secret 11
+               </div> */}
+               <div className="component-content">
+                    <form onSubmit={this._login.bind(this)}>
+                        <div className="signup-item input">
+                            <label>Username</label>
+                            <input type="text" value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
+                        </div>
+                        <div className="signup-item input">
+                            <label>Password</label>
+                            <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
+                        </div>
+                        <div className="signup-item submit">
+                            <button type="submit" onClick={this._login.bind(this)} className="app-button">Login</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         )
     }

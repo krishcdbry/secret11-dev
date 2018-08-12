@@ -3,6 +3,8 @@ const USER_LOGGED_OUT = "USER_LOGGED_OUT";
 const STORY_PUBLISH_APIED = "STORY_PUBLISH_APIED";
 const STORY_FEED_API_LOADED = "STORY_FEED_API_LOADED";
 const TOPICS_LOADED = "TOPICS_LOADED";
+const TOGGLE_MODAL = "TOGGLE_MODAL";
+const SET_MODAL_CONTENT = "SET_MODAL_CONTENT";
 
 function createActionUserLoggedIn(user, token) {
     return {
@@ -39,16 +41,33 @@ function createActionOnTopicsLoaded(topics) {
     }
 }
 
+function createActionToggleModal() {
+    return {
+        type : TOGGLE_MODAL
+    }
+}
+
+function createActionSetModalContent(content) {
+    return {
+        type : SET_MODAL_CONTENT,
+        content,
+    }
+}
+
 export {
     USER_LOGGED_IN,
     USER_LOGGED_OUT,
     STORY_PUBLISH_APIED,
     STORY_FEED_API_LOADED,
     TOPICS_LOADED,
+    TOGGLE_MODAL,
+    SET_MODAL_CONTENT,
 
     createActionUserLoggedIn,
     createActionUserLoggedOut,
     createActionStoryPublished,
     createActionOnStoryFeedLoaded,
-    createActionOnTopicsLoaded
+    createActionOnTopicsLoaded,
+    createActionToggleModal,
+    createActionSetModalContent
 }

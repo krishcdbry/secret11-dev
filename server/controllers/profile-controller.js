@@ -125,7 +125,7 @@ let _me = (req, res, next) => {
 let _getUserProfile = (req, res) => {
     try {
         response = res;
-        if (req.params.user && req.userId) {
+        if (req.params.user) {
             let name = req.params.user;
 
             User.find({"username": name}, (err, user) => {

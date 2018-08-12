@@ -12,7 +12,7 @@ import { createActionUserLoggedOut, createActionStoryPublished } from '../action
 import Storyfeed from './story/Storyfeed';
 import Storyform from './story/Storyform';
 import NotFound from './404';
-import {customAlert} from '../helpers/utils';
+import {customAlert, modalToggle} from '../helpers/utils';
 import Profilefeed from './profile/Profilefeed';
 import { Route, Link, Switch, Redirect } from 'react-router-dom';
 
@@ -57,6 +57,10 @@ class ProfilePage extends React.Component {
 
     _followUser() {
         let {user} = this.props;
+        if (!user) {
+            modalToggle();
+            return;
+        }
         let {id, username} = this.state.profile;
         let userBody = {
             user : id
@@ -95,9 +99,11 @@ class ProfilePage extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if(nextProps.userHandle != prevState.user.username) {
-            return {
-                profile : null
+        if (prevState.user) {
+            if(nextProps.userHandle != prevState.user.username) {
+                return {
+                    profile : null
+                }
             }
         }
         return null;
@@ -126,7 +132,7 @@ class ProfilePage extends React.Component {
                 <Profilefeed id={profile.id}/>
             )
 
-            if (profile.username == this.props.user.username) {
+            if (this.props.user && (profile.username == this.props.user.username)) {
                 profileEditContent = (
                     <div className="profile-edit-option">
                             <Link to="/profile/edit" className="app-button inverse">Edit</Link>

@@ -49,7 +49,7 @@ const SEARCH_IMAGES_API = '/search/pic/';
 const SEARCH_GLOBAL_API = '/search/global/';
 
 const getTokenHeaders = () => {
-    let _token = localStorage.getItem('x-access-token');
+    let _token = localStorage.getItem('x-access-token') || 742;
     let authHeaders = new Headers();
     authHeaders.append('x-access-token' , _token);
     authHeaders.append('Accept', 'application/json');

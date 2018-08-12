@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import random from '../../helpers/random';
 import {Link} from 'react-router-dom';
-import { customAlert } from '../../helpers/utils';
+import { customAlert, modalToggle } from '../../helpers/utils';
 import { 
     SERVER,
     STORY_REPLY_PUBLISH_API,
@@ -12,6 +12,7 @@ import {
 
     getTokenHeaders
 } from '../../config/network';
+
 
 class StoryitemMini extends React.Component {
     constructor(context, props) {
@@ -25,8 +26,6 @@ class StoryitemMini extends React.Component {
             fullStory: (this.props.full) ? true : false,
             expandImage : false
         }
-
-        console.log(this.props);
     }
 
     _storyVoteProcessed(vote) {
@@ -40,46 +39,52 @@ class StoryitemMini extends React.Component {
     }
 
     _voted() {
+        let {user} = this.props;
+        
+        if (!user) {
+            modalToggle();
+            return;
+        }
+
         let {story, voting} = this.state;
         let {upvote} = story;
-       // let {voted} = this.props;
-       if (voting) {
-           return;
-       }
-       
-       this.setState({
-           voting: true
-       })
+        if (voting) {
+            return;
+        }
+
+        this.setState({
+            voting: true
+        })
 
         if (!upvote.voted) {
-            fetch(SERVER+STORY_UPVOTE_API, {
-                method: 'POST',
-                headers: getTokenHeaders(),
-                body: JSON.stringify({"story": story.id})
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    this._storyVoteProcessed(res.upvote)
-                    //voted(newStory);
-                }
-            })
-            .catch((err)=>console.log(err))
+        fetch(SERVER+STORY_UPVOTE_API, {
+            method: 'POST',
+            headers: getTokenHeaders(),
+            body: JSON.stringify({"story": story.id})
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                this._storyVoteProcessed(res.upvote)
+                //voted(newStory);
+            }
+        })
+        .catch((err)=>console.log(err))
         }
         else {
-            
-            fetch(SERVER+STORY_DOWNVOTE_API+story.id, {
-                method: 'DELETE',
-                headers: getTokenHeaders()
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    this._storyVoteProcessed(res.upvote);
-                }
-            })
-            .catch((err)=>console.log(err))
-            
+
+        fetch(SERVER+STORY_DOWNVOTE_API+story.id, {
+            method: 'DELETE',
+            headers: getTokenHeaders()
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                this._storyVoteProcessed(res.upvote);
+            }
+        })
+        .catch((err)=>console.log(err))
+
         }
     }
 

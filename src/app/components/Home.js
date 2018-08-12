@@ -23,7 +23,6 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-
         fetch(SERVER+TAG_LIST_API, {
             headers : getTokenHeaders()
         })
@@ -72,7 +71,8 @@ class Home extends React.Component {
         let storyFormComponent = null;
         let imgSrc = "/dist/assets/images/add.png";
         let tagsComponent = [];
-        let activeMenu = "Feed";
+        let createComponent = null;
+        let activeMenu = (user) ? "Feed" : "All";
 
         if (topic) {
             activeMenu = topic;
@@ -97,17 +97,23 @@ class Home extends React.Component {
             imgSrc = "/dist/assets/images/cancel.png";
         }
 
+        if (this.props.user) {
+            createComponent = (
+                        <Link to="/compose/new" className="create-item">
+                            <div className="create" style={this.state.iconStyle}>
+                                <img src={imgSrc}/>
+                            </div>
+                        </Link>
+            )
+        }
+
         if (this.props.topics.length > 0) {
             homeContent = (<div className="home">
                 <Header/>
                 <MainMenu tag={activeMenu}/>
                 <div className="home-content home-page">
                     <div className="left-menu">
-                        <Link to="/compose/new" className="create-item">
-                            <div className="create" style={this.state.iconStyle}>
-                                <img src={imgSrc}/>
-                            </div>
-                        </Link>
+                        {createComponent}
                         <div className="story-tags suggestion">
                                 {tagsComponent}
                         </div>

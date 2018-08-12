@@ -3,7 +3,9 @@ import {
     USER_LOGGED_OUT,
     STORY_PUBLISH_APIED, 
     STORY_FEED_API_LOADED,
-    TOPICS_LOADED
+    TOPICS_LOADED,
+    TOGGLE_MODAL,
+    SET_MODAL_CONTENT
 } from "../actions/actions";
 
 let kInitialState = {
@@ -11,7 +13,11 @@ let kInitialState = {
     loggedIn : false,
     user : null,
     storyfeed : [],
-    topics : []
+    topics : [],
+    modalConfig : {
+        open : false,
+        content : 'L'
+    }
 }
 
 const setupReducer = (state = kInitialState, action) => {
@@ -27,11 +33,6 @@ const setupReducer = (state = kInitialState, action) => {
         }
         case TOPICS_LOADED: {
             let {topics} = action;
-            if (topics[0].name != 'Feed') {
-                topics.unshift({
-                    "name" : "Feed"
-                })
-            }
             localStorage.setItem("topics", JSON.stringify(topics));
             return Object.assign({}, state, {topics})
         }
@@ -54,6 +55,17 @@ const setupReducer = (state = kInitialState, action) => {
             }
             
             return Object.assign({}, state, {storyfeed: newFeed});
+        }
+        case TOGGLE_MODAL: {
+            let {modalConfig} = state;
+            modalConfig.show =  !modalConfig.show;
+            return Object.assign({}, state, {modalConfig});
+        }
+        case SET_MODAL_CONTENT : {
+            let {modalConfig} = state;
+            let {content} = action;
+            modalConfig.content = content;
+            return Object.assign({}, state, {modalConfig});
         }
         default : {
             return state;

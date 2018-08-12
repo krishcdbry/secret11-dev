@@ -44,21 +44,14 @@ const _userFollowers = (user) => {
 let _feed = (req, res, next) => {
     try {
         response = res;
-        if (req.userId) {
-            currentUserID = req.userId;
-            Users.find({user: {$not : {_id : currentUserID}}}, (err, results) => {
-                if (err) {
-                    throw(err);
-                }
-                
-            }).sort({"_id": -1}).limit(15);
-        }
-        else {
-            return res.status(403).send({ 
-                success: false, 
-                message: 'Unauthorized request' 
-            });
-        }
+        currentUserID = req.userId || null;
+        Users.find({user: {$not : {_id : currentUserID}}}, (err, results) => {
+            if (err) {
+                throw(err);
+            }
+            
+        }).sort({"_id": -1}).limit(15);
+    
     } catch (err) {
         console.error(err);
         return res.status(500).send({ 

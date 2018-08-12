@@ -267,42 +267,34 @@ let _publish = (req, res, next) => {
 let _storyItem = (req, res) => {
     try {
         response = res;
-        if (req.userId) {
-            currentUserID = req.userId;
-            let user = req.params.user || req.userId;
-            let {url} = req.body;
-            Story.find({active: true, url: url}, (err, results) => {
+        currentUserID = req.userId || null;
+        let user = req.params.user || currentUserID;
+        let {url} = req.body;
+        Story.find({active: true, url: url}, (err, results) => {
 
-                if (err) {
-                    throw(err);
-                }
+            if (err) {
+                throw(err);
+            }
 
-                if (results.length < 1) {
-                    return res.status(404).send({ 
-                        success: false, 
-                        message: 'Story not found' 
-                    });
-                }
-
-                _getStoryData(results[0]).then(values => {
-
-                    return res.status(200).send({ 
-                        success: true,
-                        _embedded: values 
-                    });
-
-                }, err => {
-                    throw(err);
+            if (results.length < 1) {
+                return res.status(404).send({ 
+                    success: false, 
+                    message: 'Story not found' 
                 });
+            }
+
+            _getStoryData(results[0]).then(values => {
+
+                return res.status(200).send({ 
+                    success: true,
+                    _embedded: values 
+                });
+
+            }, err => {
+                throw(err);
+            });
                 
-            });
-        }
-        else {
-            return res.status(403).send({ 
-                success: false, 
-                message: 'Unauthorized request' 
-            });
-        }
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({success:false, message: "Error fetching story"});
@@ -312,32 +304,24 @@ let _storyItem = (req, res) => {
 let _feed = (req, res, next) => {
     try {
         response = res;
-        if (req.userId) {
-            currentUserID = req.userId;
-            Story.find({active: true}, (err, results) => {
-                if (err) {
-                    throw(err);
-                }
-                let storyPromises = results.map(item => {
-                    return this.getStoryData(item);
-                });
-                
-                Promise.all(storyPromises).then(values => {
-                    return res.status(200).send({ 
-                        _embedded: values 
-                    });
-                }, err => {
-                    throw(err);
-                });
-                
-            }).sort({"_id": -1}).limit(15);
-        }
-        else {
-            return res.status(403).send({ 
-                success: false, 
-                message: 'Unauthorized request' 
+        currentUserID = req.userId || null;
+        Story.find({active: true}, (err, results) => {
+            if (err) {
+                throw(err);
+            }
+            let storyPromises = results.map(item => {
+                return this.getStoryData(item);
             });
-        }
+            
+            Promise.all(storyPromises).then(values => {
+                return res.status(200).send({ 
+                    _embedded: values 
+                });
+            }, err => {
+                throw(err);
+            });
+            
+        }).sort({"_id": -1}).limit(15);
     } catch (err) {
         console.error(err);
         return res.status(500).send({ 
@@ -350,37 +334,29 @@ let _feed = (req, res, next) => {
 let _feedByUser = (req, res, next) => {
     try {
         response = res;
-        if (req.userId) {
-            currentUserID = req.userId;
-            let user = req.params.user || req.userId;
-            Story.find({active: true, author: user}, (err, results) => {
+        currentUserID = req.userId || null;
+        let user = req.params.user || req.userId;
+        Story.find({active: true, author: user}, (err, results) => {
 
-                if (err) {
-                    throw(err);
-                }
+            if (err) {
+                throw(err);
+            }
 
-                let storyPromises = results.map(item => {
-                    return this.getStoryData(item);
-                });
-                
-                Promise.all(storyPromises).then(values => {
-
-                    return res.status(200).send({ 
-                        _embedded: values 
-                    });
-
-                }, err => {
-                    throw(err);
-                });
-                
-            }).sort({"_id": -1}).limit(15);
-        }
-        else {
-            return res.status(403).send({ 
-                success: false, 
-                message: 'Unauthorized request' 
+            let storyPromises = results.map(item => {
+                return this.getStoryData(item);
             });
-        }
+            
+            Promise.all(storyPromises).then(values => {
+
+                return res.status(200).send({ 
+                    _embedded: values 
+                });
+
+            }, err => {
+                throw(err);
+            });
+            
+        }).sort({"_id": -1}).limit(15);
     } catch (err) {
         console.error(err);
         return res.status(500).json({success:false, message: "Error fetching feed"});
@@ -390,37 +366,29 @@ let _feedByUser = (req, res, next) => {
 let _feedByTopic = (req, res, next) => {
     try {
         response = res;
-        if (req.userId) {
-            currentUserID = req.userId;
-            let topic = req.params.topic;
-            Story.find({active: true, topic: topic}, (err, results) => {
+        currentUserID = req.userId || null;
+        let topic = req.params.topic;
+        Story.find({active: true, topic: topic}, (err, results) => {
 
-                if (err) {
-                    throw(err);
-                }
+            if (err) {
+                throw(err);
+            }
 
-                let storyPromises = results.map(item => {
-                    return this.getStoryData(item);
-                });
-                
-                Promise.all(storyPromises).then(values => {
-
-                    return res.status(200).send({ 
-                        _embedded: values 
-                    });
-
-                }, err => {
-                    throw(err);
-                });
-                
-            }).sort({"_id": -1}).limit(15);
-        }
-        else {
-            return res.status(403).send({ 
-                success: false, 
-                message: 'Unauthorized request' 
+            let storyPromises = results.map(item => {
+                return this.getStoryData(item);
             });
-        }
+            
+            Promise.all(storyPromises).then(values => {
+
+                return res.status(200).send({ 
+                    _embedded: values 
+                });
+
+            }, err => {
+                throw(err);
+            });
+            
+        }).sort({"_id": -1}).limit(15);
     } catch (err) {
         console.error(err);
         return res.status(500).json({success:false, message: "Error fetching feed"});
@@ -606,30 +574,28 @@ let _downVote = (req, res) => {
 
 let _tagFeed = (req, res) => {
     try {  
-          if (req.userId) {
-                Activity.distinct('story', (err, results) => {
-                  if (err) {
-                      throw(err);
-                  }
+        Activity.distinct('story', (err, results) => {
+            if (err) {
+                throw(err);
+            }
+    
+            if (!err && results) {
             
-                  if (!err && results) {
-                  
-                      let storyPromises = results.map(item => {
-                          return this.getStoryById(item);      
-                      });
+                let storyPromises = results.map(item => {
+                    return this.getStoryById(item);      
+                });
 
-                      Promise.all(storyPromises).then(values => {
-                          console.log(values);
-                          return res.status(200).send({ 
-                              _embedded: values 
-                          });
-                      }, err => {
-                          throw(err);
-                      })
-                  
-                  }
-              }).sort({"_id": -1});
-          }
+                Promise.all(storyPromises).then(values => {
+                    console.log(values);
+                    return res.status(200).send({ 
+                        _embedded: values 
+                    });
+                }, err => {
+                    throw(err);
+                })
+            
+            }
+        }).sort({"_id": -1});
     } 
     catch (err) {
       console.error(err);
