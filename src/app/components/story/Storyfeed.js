@@ -60,7 +60,6 @@ class Storyfeed extends React.Component {
         let key = random();
         let feedComponent = [
             <div key={key} className="feed-loader">
-                <br/><br/><br/>
                 <div className="spinner">
                     <div className="bounce1"></div>
                     <div className="bounce2"></div>
