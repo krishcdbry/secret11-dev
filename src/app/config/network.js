@@ -7,7 +7,7 @@ const DEV_SERVER = "api-geek";
 const LIVE_SERVER = "api";
 
 let CURRENT_SERVER = LIVE_SERVER;
-if (HOST.indexOf('geek') > 0) {
+if (HOST.indexOf('geek') > -1) {
     CURRENT_SERVER = DEV_SERVER;
 }
 
