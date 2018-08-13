@@ -18,6 +18,8 @@ if (PROTOCOL == "https:") {
 
 const SERVER = `${PROTOCOL}//${CURRENT_SERVER}.${DOMAIN}:${PORT}`;
 
+console.log(HOST, SERVER);
+
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";
 const USER_PROFILE_EDIT_API = "/user";
