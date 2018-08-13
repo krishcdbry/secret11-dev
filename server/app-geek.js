@@ -32,7 +32,7 @@ let topicController = require('./controllers/topic-controller');
 // Firewall for router
 let firewall = require('./helpers/firewall');
 
-let DB_NAME = "secret11-dev-dbs";
+let DB_NAME = "secret11-geek-dbs";
 let PORT = 5000;
 
 mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
