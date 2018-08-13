@@ -32,14 +32,10 @@ let topicController = require('./controllers/topic-controller');
 // Firewall for router
 let firewall = require('./helpers/firewall');
 
+let DB_NAME = "secret11-dev-dbs";
+let PORT = 5000;
 
-
-let DB_NAME = "secret11-dbs";
-let PORT = 9000;
-
-// DB Connection
 mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
-
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
@@ -66,7 +62,7 @@ app.use(function (req, res, next) {
 
 
 app.get('/', function (req, res) {
-	res.json({"message" : "Welcome to Secret11 API"});
+	res.json({"message" : "Welcome to Secret11 dev API"});
 });
 
 // Authentication service
