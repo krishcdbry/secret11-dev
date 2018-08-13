@@ -53,9 +53,8 @@ app.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
-
     // Check db
-    if (req.headers['Referer'].indexOf('geek') > -1) {
+    if (req.headers['referer'].indexOf('geek') > -1) {
         // DB connection
         DB_NAME = "secret11-geek-dbs";
 

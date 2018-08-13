@@ -1,14 +1,19 @@
 const PROTOCOL = window.location.protocol;
 const HOST = window.location.host;
-const DOMAIN = "secret11.com";
 
 const LOCAL_SERVER = "api";
 const DEV_SERVER = "api-geek";
 const LIVE_SERVER = "api";
 
 let CURRENT_SERVER = LIVE_SERVER;
+let DOMAIN = "secret11";
+
 if (HOST.indexOf('geek') > -1) {
     CURRENT_SERVER = DEV_SERVER;
+}
+
+if (HOST.indexOf('.com') > 1) {
+    DOMAIN += ".com";
 }
 
 let PORT = "9000";
