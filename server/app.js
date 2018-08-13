@@ -32,30 +32,7 @@ let topicController = require('./controllers/topic-controller');
 // Firewall for router
 let firewall = require('./helpers/firewall');
 
-// DB connection
-mongoose.connect('mongodb://localhost:27017/secret11-dbs');
-
-// let dbUrl = `mongodb+srv://krishcdbry:${config.DB_AUTH_PASSWORD}@cluster0-zjz1z.mongodb.net/secret11-dbs`;
-// MongoClient.connect(dbUrl, (err, client) => {
-//     // connection
-//     //console.log(connection);
-//    // console.log(client);
-
-//     const collection = client.db("secret11-dbs").collection("user");
-//     // perform actions on the collection object
-    
-//     let user = new User({
-// 		username : "hehe"
-// 	});
-
-//     collection.save({
-// 		username : "hehe"
-// 	},(err, res) => {
-//         console.log(res);
-//     })
-//     client.close();
-// });
-
+let DB_NAME = "secret11-dbs";
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
@@ -76,12 +53,24 @@ app.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
+
+    // Check db
+    if (req.headers['Referer'].indexOf('geek') > -1) {
+        // DB connection
+        DB_NAME = "secret11-geek-dbs";
+
+    }
     // Pass to next layer of middleware
     next();
 });
 
+
+// DB Connection
+mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
+
+
 app.get('/', function (req, res) {
-	res.json({"message" : "Welcome to Secret11 API"});
+	res.json({"message" : "Welcome to Secret11 dev API"});
 });
 
 // Authentication service
