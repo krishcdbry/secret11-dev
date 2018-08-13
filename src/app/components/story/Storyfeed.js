@@ -11,7 +11,8 @@ class Storyfeed extends React.Component {
         super(context, props);
         this.state = {
             storyfeed : this.props.storyfeed,
-            topic : this.props.topic
+            topic : this.props.topic,
+            loading : true
         }
     }
 
@@ -24,6 +25,9 @@ class Storyfeed extends React.Component {
     }
 
     _loadFeed() {
+        this.setState({
+            loading : true
+        })
         let {onStoryFeedLoaded, topic} = this.props;
         let api = SERVER+STORY_FEED_API;
         if (topic) {
@@ -38,7 +42,8 @@ class Storyfeed extends React.Component {
         .then(res => {
             //onStoryFeedLoaded(res._embedded);
             this.setState({
-                storyfeed : res._embedded
+                storyfeed : res._embedded,
+                loading: false
             })
         })
     }
@@ -50,7 +55,7 @@ class Storyfeed extends React.Component {
     }
 
     render() {
-        let {storyfeed} = this.state;
+        let {storyfeed, loading} = this.state;
         let {user} = this.props;
         let key = random();
         let feedComponent = [
@@ -73,7 +78,7 @@ class Storyfeed extends React.Component {
                 )
             })
         }
-        else {
+        else if (!loading) {
             feedComponent = (
                 <div className="no-content"><h2>No content</h2></div>
             )
