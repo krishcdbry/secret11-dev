@@ -8,23 +8,22 @@ const LIVE_SERVER = "api";
 let CURRENT_SERVER = LIVE_SERVER;
 let DOMAIN = "secret11";
 
+let PORT = "9000";
+if (PROTOCOL == "https:") {
+    PORT = "7200";
+}
+
 if (HOST.indexOf('geek') > -1) {
     CURRENT_SERVER = DEV_SERVER;
+    PORT = "5000";
 }
 
 if (HOST.indexOf('.com') > 1) {
     DOMAIN += ".com";
 }
 
-let PORT = "9000";
-if (PROTOCOL == "https:") {
-    PORT = "7200";
-}
 
 const SERVER = `${PROTOCOL}//${CURRENT_SERVER}.${DOMAIN}:${PORT}`;
-
-console.log(HOST, SERVER);
-
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";
 const USER_PROFILE_EDIT_API = "/user";
