@@ -55,19 +55,20 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
 
     // Check db
+    console.log(req.headers['referer']);
     if (req.headers['referer'].indexOf('geek') > -1) {
         // DB connection
         DB_NAME = "secret11-geek-dbs";
         PORT = "5000";
 
     }
+
+    // DB Connection
+    mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
+
     // Pass to next layer of middleware
     next();
 });
-
-
-// DB Connection
-mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
 
 
 app.get('/', function (req, res) {
