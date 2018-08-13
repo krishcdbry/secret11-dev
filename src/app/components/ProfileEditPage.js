@@ -114,7 +114,6 @@ class ProfileEditPage extends React.Component {
         
         return (
             <div className="home">
-                <Header/>
                 <div className="home-content">
                     <div className="profile-edit-component">
                     <div className="profile-save-options">

@@ -29,7 +29,7 @@ class TagPage extends React.Component {
             url : this.props.storyUrl,
             invalidStory: false,
             tags : [],
-            loading : true
+            loading : false
         }
     }
 
@@ -46,6 +46,10 @@ class TagPage extends React.Component {
     }
 
     _loadData(key) {
+        this.setState({
+            loading : true
+        })
+        
         let postBody = {
             url : key
         }
@@ -142,9 +146,10 @@ class TagPage extends React.Component {
                                 </div>
                             </div>
                             <div className="right-menu">
-                                <ShareBox/>
+                                {/* <ShareBox/> */}
                                 <div className="story-tags suggestion">
-                                        {tagsComponent}
+                                        {/* {tagsComponent} */}
+                                    <Storyfeed topic={story.topic.name} fullStory={true}/>
                                 </div>
                            </div>
                         </div>
@@ -159,7 +164,6 @@ class TagPage extends React.Component {
 
         return (
             <div className="home">
-                <Header/>
                 {homeComponent}
             </div>
         )

@@ -1,6 +1,5 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import Storyitem from '../story/Storyitem';
 import { 
     SERVER,
     STORY_FEED_API, 
@@ -8,6 +7,7 @@ import {
     getTokenHeaders
 } from '../../config/network';
 import random from '../../helpers/random';
+import StoryitemMini from '../story/StoryitemMini';
 
 class Tagfeed extends React.Component {
     constructor(context, props) {
@@ -63,7 +63,7 @@ class Tagfeed extends React.Component {
                 storyfeed.forEach(item => {
                     let key = random();
                     feedComponent.push(
-                        <Storyitem story={item} voted={this._voted.bind(this)} key={key}/>
+                        <StoryitemMini story={item} voted={this._voted.bind(this)} key={key}/>
                     )
                 })
             }

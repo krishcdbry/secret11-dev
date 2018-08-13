@@ -160,7 +160,7 @@ class TagPage extends React.Component {
 
             tagInfoContent = (
                 <div>
-                     <h1>{this.props.tag}</h1>
+                     <h1>#{this.props.tag}</h1>
                      <span className="count">
                          {count} Stories | {tag.follower.count} Followers
                     </span>
@@ -202,7 +202,6 @@ class TagPage extends React.Component {
 
         return (
             <div className="home">
-                <Header/>
                 <div className="tag-content home-content">
                     <div className="tag-block">
                         <div className="tag-info">
@@ -213,12 +212,12 @@ class TagPage extends React.Component {
                            {tagFeedComponent}
                         </div>
                     </div>
-                    <div className="right-menu">
+                    {/* <div className="right-menu">
                         <ShareBox/>
                         <div className="story-tags suggestion">
                                 {tagsComponent}
                         </div>
-                   </div>
+                   </div> */}
                 </div>
             </div>
         )

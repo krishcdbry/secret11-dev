@@ -168,7 +168,7 @@ class Storyitem extends React.Component {
 
     render() {
         let {story, fullStory, expandImage} = this.state;
-        let storyClass = "story-item";
+        let storyClass = "story-item full-item";
         let questionIndicator = null;
         let storyTagsContent = [];
         let voteClass = "fa fa-heart-o";
@@ -183,11 +183,12 @@ class Storyitem extends React.Component {
         let storyValue = story.content.trim();
         let expandClass = "";
         let url = "";
-        let imageStyle = {
-            'max-height': '200px',
-            'float' : 'right',
-            'max-width' : '95%'
-        }
+        let imageStyle = {};
+        // let imageStyle = {
+        //     'max-height': '200px',
+        //     'float' : 'right',
+        //     'max-width' : '95%'
+        // }
 
         if (expandImage) {
             expandClass = "expand-image";

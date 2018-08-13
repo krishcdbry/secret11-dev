@@ -72,7 +72,7 @@ class Home extends React.Component {
         let imgSrc = "/dist/assets/images/add.png";
         let tagsComponent = [];
         let createComponent = null;
-        let activeMenu = (user) ? "Feed" : "All";
+        let activeMenu = "Feed";
 
         if (topic) {
             activeMenu = topic;
@@ -109,8 +109,6 @@ class Home extends React.Component {
 
         if (this.props.topics.length > 0) {
             homeContent = (<div className="home">
-                <Header/>
-                <MainMenu tag={activeMenu}/>
                 <div className="home-content home-page">
                     <div className="left-menu">
                         {createComponent}

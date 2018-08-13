@@ -138,6 +138,7 @@ class App extends React.Component {
         let {loggedIn} = this.props;
         let closeModalSrc = "/dist/assets/images/add.png";
         let loginSignComponent = null;
+        let activeMenu = "";
 
         let signupLoginComponent = (
             <div className="main-component">
@@ -168,6 +169,7 @@ class App extends React.Component {
 
             switch(route) {
                 case "topic" : {
+                    activeMenu = routeId;
                     routeComponent = <Home topic={routeId}/>;
                     break;
                 }
@@ -206,7 +208,9 @@ class App extends React.Component {
                     routeComponent = <NotFound/>
                 }
             }
-            
+        }
+        else {
+            activeMenu = "Feed";
         }
 
         if (activeState == "S") {
@@ -220,6 +224,8 @@ class App extends React.Component {
         if (this.props.topics.length > 0) {
             mainComponent = (
             <div className="maincomponent">
+                <Header/>
+                <MainMenu tag={activeMenu}/>
                 {routeComponent}
             </div>)
         }

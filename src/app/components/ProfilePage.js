@@ -211,7 +211,6 @@ class ProfilePage extends React.Component {
 
         return (
             <div className="home">
-                <Header/>
                 {homeContent}
             </div>
         )

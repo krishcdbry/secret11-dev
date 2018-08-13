@@ -40,7 +40,6 @@ class Storyfeed extends React.Component {
         })
         .then(res => res.json())
         .then(res => {
-            //onStoryFeedLoaded(res._embedded);
             this.setState({
                 storyfeed : res._embedded,
                 loading: false
