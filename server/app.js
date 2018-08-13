@@ -33,6 +33,7 @@ let topicController = require('./controllers/topic-controller');
 let firewall = require('./helpers/firewall');
 
 let DB_NAME = "secret11-dbs";
+let PORT = 9000;
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
@@ -57,6 +58,7 @@ app.use(function (req, res, next) {
     if (req.headers['referer'].indexOf('geek') > -1) {
         // DB connection
         DB_NAME = "secret11-geek-dbs";
+        PORT = "5000";
 
     }
     // Pass to next layer of middleware
@@ -128,7 +130,7 @@ app.get('/search/pic/:key', firewall, searchController.searchPic);
 // Scrap website
 //app.post('/api/scrap', scrapController.scrap);
 
-http.listen('9000', function () {
+http.listen(PORT, function () {
 	console.log("Working dude !!");
 });
 
