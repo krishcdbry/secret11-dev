@@ -59,7 +59,7 @@ app.use(function (req, res, next) {
     if (req.headers['host'].indexOf('geek') > -1) {
         // DB connection
         DB_NAME = "secret11-geek-dbs";
-        PORT = "5000";
+        PORT = 5000;
     }
     
     // DB Connection
