@@ -33,7 +33,7 @@ let topicController = require('./controllers/topic-controller');
 let firewall = require('./helpers/firewall');
 
 let DB_NAME = "secret11-dbs";
-let PORT = 9000;
+let PORT = 5000;
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
