@@ -2,8 +2,10 @@ const PROTOCOL = window.location.protocol;
 const HOST = window.location.host;
 
 const LOCAL_SERVER = "api";
-const DEV_SERVER = "api-dev";
+const DEV_SERVER = "api-geek";
 const LIVE_SERVER = "api";
+
+let CURRENT_SERVER = LIVE_SERVER;
 
 let PORT = "9000";
 
@@ -11,7 +13,11 @@ if (PROTOCOL == "https:") {
     PORT = "7200";
 }
 
-const SERVER = PROTOCOL+"//"+LIVE_SERVER+"."+HOST+":"+PORT;
+if (HOST.indexOf('geek') > 0) {
+    CURRENT_SERVER = DEV_SERVER;
+}
+
+const SERVER = PROTOCOL+"//"+CURRENT_SERVER+"."+HOST+":"+PORT;
 
 const USER_DATA_API = "/user";
 const USER_PROFILE_API = "/user/";

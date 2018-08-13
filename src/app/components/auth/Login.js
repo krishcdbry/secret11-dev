@@ -69,15 +69,16 @@ class Login extends React.Component {
                <div className="component-content">
                     <form onSubmit={this._login.bind(this)}>
                         <div className="signup-item input">
-                            <label>Username</label>
-                            <input type="text" value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
+                            <input type="text" placeholder=" " value={this.state.username} onChange={this._usernameInputHandler.bind(this)} autoComplete="off"/>
+                            <label><span className="fa fa-user"></span> <span className="hint">Username</span></label>
                         </div>
                         <div className="signup-item input">
-                            <label>Password</label>
-                            <input type="password" value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
+                            <input type="password" placeholder=" " value={this.state.password} onChange={this._passwordInputHandler.bind(this)} autoComplete="new-password"/>
+                            <label><span className="fa fa-lock"></span> <span className="hint">Password</span></label>
                         </div>
                         <div className="signup-item submit">
                             <button type="submit" onClick={this._login.bind(this)} className="app-button">Login</button>
+                            <a href="javascript:;"> Forgot password ? </a>
                         </div>
                     </form>
                 </div>
