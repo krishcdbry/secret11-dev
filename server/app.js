@@ -33,7 +33,7 @@ let topicController = require('./controllers/topic-controller');
 let firewall = require('./helpers/firewall');
 
 let DB_NAME = "secret11-dbs";
-let PORT = 5000;
+let PORT = 9000;
 
 app.use(bodyParser.json());
 app.use(multipartMiddleware);
@@ -55,14 +55,14 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
 
     // Check db
-    console.log(req.headers['referer']);
-    if (req.headers['referer'].indexOf('geek') > -1) {
-        // DB connection
-        DB_NAME = "secret11-geek-dbs";
-        PORT = "5000";
-
+    if (req.headers.hasOwnProperty('host')) {
+        if (req.headers['host'].indexOf('geek') > -1) {
+            // DB connection
+            DB_NAME = "secret11-geek-dbs";
+            PORT = "5000";
+        }
     }
-
+    
     // DB Connection
     mongoose.connect(`mongodb://localhost:27017/${DB_NAME}`);
 
