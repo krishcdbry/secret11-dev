@@ -55,12 +55,11 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
 
     // Check db
-    if (req.headers.hasOwnProperty('host')) {
-        if (req.headers['host'].indexOf('geek') > -1) {
-            // DB connection
-            DB_NAME = "secret11-geek-dbs";
-            PORT = "5000";
-        }
+
+    if (req.headers['host'].indexOf('geek') > -1) {
+        // DB connection
+        DB_NAME = "secret11-geek-dbs";
+        PORT = "5000";
     }
     
     // DB Connection
